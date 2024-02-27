@@ -1,0 +1,47 @@
+#mainDiv{
+	    float: left;
+	background-color: #f8f9fa !important;
+	height:1000px;
+}
+#menu {
+    width: 250px;
+    height: 100%;
+    position: relative;
+    background-color: #f19f4d;
+}
+
+.nab-item {
+	color: white;
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+
+.nav-link {
+	color: white;
+	font-weight: bold;
+	font-size: 1.0rem;
+}
+
+.nav-link:hover, .nav-link:focus {
+	color: aquamarine;
+}
+
+ .submenu.active {
+        display: block;
+        animation-name: fadenav;
+        animation-duration: 0.3s;
+                top: 75px;
+    }
+.submenu {
+        display: none;
+}
+#menu{
+	padding-top: 10px;
+		position:relative;
+}
+#menubtn{
+		position: absolute;
+}
+#menuOpen{
+	display:none;
+}

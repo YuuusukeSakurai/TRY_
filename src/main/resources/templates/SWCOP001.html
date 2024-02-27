@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="css/index.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+		<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
+		
+		<title>WHC:給与計算用CSV出力</title>
+		
+	</head>
+
+	<body>
+		<header>
+		   <!--ヘッダー部分は、Tymeleafで共通化すること-->
+		   <nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: #015db2">
+		     <a class="navbar-brand" href="ML010.html"><span class="ml-1" style="color: white">　労働時間計算システム </span><img src="img/home.png" alt="logo" width="25px" height="25px" class="img-white"></a>
+		     
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav me-auto">
+			  </ul>
+			  
+			  <ul class="navbar-nav">
+			    <li class="nav-item dropdown">
+			      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white">
+			        [Acount Name]<span class="visually-hidden">(current)</span>
+			      </a>
+			      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="background-color: #015db2">
+			        <a class="dropdown-item" href="#" style="color: white">プロフィール</a>
+			        <a class="dropdown-item" href="LF020.html" style="color: white">パスワード変更</a>
+			        <div class="dropdown-divider"></div>
+			        <a class="dropdown-item" href="LF010.html" style="color: white">ログアウト</a>
+			      </div>
+			    </li>
+			  </ul>
+			</div>
+		   </nav>
+		   <!--ヘッダー部分は、Tymeleafで共通化すること-->
+ 		</header>
+		
+		<div class="d-flex flex-row" style="height: 1860px">
+		
+			<object data="menu.html" type="text/html"></object>
+		
+			<main class="w-100 h-100 bg-light">
+				<div class="container bg-white border py-3 my-3" style="width: 1800px">
+				
+					<div class="flatpickr input-group mb-3" data-id="strap">
+					  <label class="input-group-text">出力対象年月：</label>
+					  <input id="inputDate" type="text" class="" placeholder="登録年月" style="width: 120px" data-input>
+					  <a class="input-button" title="toggle" style="height: 38px" data-toggle>
+					    <i class="material-icons">date_range</i>
+					  </a>
+					  <a class="input-button" title="clear"  style="height: 38px" data-clear>
+					    <i class="material-icons">clear</i>
+					  </a>
+					</div>
+					<div id="output"></div>
+					
+				    <button id="btn-conf" type="button" class="btn btn-def mb-3" style="width: 150px" onclick="btnClickConf()">出力対象確認</button>
+				    <button id="btn-csv" type="button" class="btn btn-def mb-3">CSV出力</button>
+				    
+					<table id="confHeader" class="table table-bordered" style="overflow-y: scroll; visibility: hidden">
+					  <thead id="timeHeader">
+					    <tr class="table-primary">
+					      <th scope="col" style="text-align: center;width: 50px">No</th>
+					      <th scope="col" style="text-align: center;width: 100px">氏名</th>
+					      <th scope="col" style="text-align: center;width: 100px">総労働<br>時間</th>
+					      <th scope="col" style="text-align: center;width: 100px">残業時間</th>
+					      <th scope="col" style="text-align: center;width: 100px">深夜<br>残業時間</th>
+					      <th scope="col" style="text-align: center;width: 100px">法定外<br>休日<br>出勤時間</th>
+					      <th scope="col" style="text-align: center;width: 100px">法定休日<br>出勤時間</th>
+					      <th scope="col" style="text-align: center;width: 100px">法定休日<br>深夜時間</th>
+					      <th scope="col" style="text-align: center;width: 100px">不就労</th>
+					      <th scope="col" style="text-align: center;width: 30px">月間<br>所定<br>日数</th>
+					      <th scope="col" style="text-align: center;width: 30px">出勤<br>日数</th>
+					      <th scope="col" style="text-align: center;width: 30px">欠勤<br>日数</th>
+					      <th scope="col" style="text-align: center;width: 30px">控除<br>日数</th>
+					      <th scope="col" style="text-align: center;width: 30px">休日<br>出勤<br>日数</th>
+					      <th scope="col" style="text-align: center;width: 30px">有給<br>使用<br>数</th>
+					      <th scope="col" style="text-align: center;width: 30px">遅刻<br>回数</th>
+					      <th scope="col" style="text-align: center;width: 30px">早退<br>回数</th>
+					      <th scope="col" style="text-align: center;width: 30px">控除<br>日数</th>
+					    </tr>
+					  </thead>
+
+					  <tbody id="confList">
+					  </tbody>
+
+					</table>
+				    <div id="paging" align="center" style="visibility: hidden">
+						<a class="mx-3">←　前のページ</a>
+						<a class="mx-1">1</a>
+						<a class="mx-1" href="IR010.html">2</a>
+						<a class="mx-1" href="IR010.html">3</a>
+						<a class="mx-1">...</a>
+						<a class="mx-1" href="IR010.html">10</a>
+						<a class="mx-3" href="IR010.html">次のページ　→</a>
+				    </div>
+				</div>
+
+			</main>
+		</div>
+
+		
+		<script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+		<script src="js/SWCOP001.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
+		<script>
+			const config = {
+				wrap: true,
+				locale: 'ja',
+				plugins: [
+					new monthSelectPlugin({
+						dateFormat: "Y年m月度"
+					})
+				]
+			}
+			flatpickr('.flatpickr', config);
+		</script>
+	</body>
+</html>

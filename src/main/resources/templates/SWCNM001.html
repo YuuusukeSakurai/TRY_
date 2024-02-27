@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ja">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link th:href="@{/css/bootstrap/bootstrap.min.css}" rel="stylesheet" type="text/css">
+		<link th:href="@{/css/SWCNM001.css}" rel="stylesheet" type="text/css">
+		<link th:href="@{/css/menu.css}" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+		<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
+
+		<title>WHC:労働時間一覧</title>
+	</head>
+
+	<body>
+		<!--ヘッダー部分は、Tymeleafで共通化-->
+		<div th:replace="~{header::header}"></div>
+
+		<div class="d-flex flex-row" style="height: 1000px">
+
+			<div th:insert="~{menu::menu}" style="width: 300px;height: 1000px;flex-shrink: 0;"></div>
+
+			<main class="w-100 bg-light">
+				<div class="container-fluid bg-white border py-3 my-3 mx-2" style="width: 1580px;">
+					<form th:action="@{/SWCNM001/search}" th:object="${form}" method="post" name="selectForm">
+						<div class="card shadow bg-light">
+						<div onclick="formDisplay()" style="cursor: pointer;">
+							<h3 id="fold" class="font-weight-bold p-2" style="float: left;">▼</h3>
+							<h3 class="font-weight-bold p-2">検索条件</h3>
+						</div>
+						<div id="open">
+							<div class="card-body p-2" style="display: flex">
+								<div class="input-group mb-2 mx-2">
+									<span class="input-group-text">社員番号</span>
+									<input id="employee_id" type="text" aria-label="emNo" class="form-control" name="employee_id" th:field="*{employeeId}">
+								</div>
+								<div class="input-group mb-2 mx-2">
+									<span class="input-group-text">社員氏名</span>
+									<input type="text" class="form-control" name="employee_name" th:field="*{employeeName}">
+								</div>
+								<div class="input-group mb-2 mx-2" style="width: 200rem">
+									<button type="button" class="btn btn-def">社員選択</button>
+								</div>
+							</div>
+							<div class="card-body p-2" style="display: flex">
+								<div class="input-group mb-2 mx-2">
+									<span class="input-group-text" style="width: 90px">顧客名</span>
+									<input type="text" class="form-control" name="client_name" th:field="*{clientName}">
+								</div>
+								<div class="input-group mb-2 mx-2">
+									<button type="button" class="btn btn-def" style="color: white">顧客選択</button>
+								</div>
+							</div>
+							<div class="card-body ps-2 pt-0" style="display: flex">
+
+								<div class="flatpickr input-group p-2 mb-3" data-id="strap" style="width: 400px">
+									<span class="input-group-text me-3" style="width: 90px">年月</span>
+									<input id="inputDate" type="text" class="" placeholder="登録年月(From)" style="width: 120px" oninput="inputChange()" name="year_month_from" th:field="*{yearMonthFrom}" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+								<div class="flatpickr input-group p-2 mb-3" data-id="strap">
+									<span class="input-group-text me-4" style="border-radius: 0rem">～</span>
+									<input id="inputDate" type="text" class="" placeholder="登録年月(To)" style="width: 120px" oninput="inputChange()" name="year_month_to" th:field="*{yearMonthTo}" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+							</div>
+							<div class="card-body ps-2 pt-0" style="display: flex;">
+								<span class="input-group-text mb-3 mx-2">ステータス</span>
+
+								<span class="input-group-text mb-3 mx-1">一時保存</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input" th:field="*{temporarilySaved}">
+
+								<span class="input-group-text mb-3 mx-1">登録</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input" th:field="*{saved}">
+
+							</div>
+							<div class="card-body ps-2 pt-0">
+								<button type="button" onclick="checkSelect()" class="btn btn-def mb-1 mx-2" >検索</button>
+							</div>
+						</div>
+						</div>
+					</form>
+
+					<form th:action="@{/SWCNM001/delete}" th:object="${workingHourParam}" method="post" name="deleteForm">
+						<button type="button" onclick="checkDelete()" class="btn btn-def my-2 mx-3" style="width: 150px">選択行削除</button>
+						<div id="errorMessage" style="display: inline-block; color: red">
+							<div th:each="errorMessage : ${errorMessages}">
+								<span th:text="${errorMessage}"></span>
+							</div>
+						</div>
+
+						<div class="text-nowrap table-responsive">
+							<table id="table" class="table table-sm table-striped table-bordered text-center mt-1" style="display: block; overflow-y: scroll;">
+								<thead style="position: sticky;top: 0;left: 0;">
+									<tr bgcolor="royalblue" style="color: white">
+										<th scope="col" style="width: 30px"><input id="checksAll" class="form-check-input m-0" type="checkbox" value="" aria-label="Checkbox for following text input"></th>
+										<th scope="col" style="width: 45px">社員<br>番号</th>
+										<th scope="col" style="width: 100px">社員氏名</th>
+										<th scope="col" style="width: 80px">登録年月</th>
+										<th scope="col" style="width: 80px">ステータス</th>
+										<th scope="col" style="width: 250px">顧客名</th>
+										<th scope="col" style="width: 70px">総労働<br>時間</th>
+										<th scope="col" style="width: 70px">残業<br>時間計</th>
+										<th scope="col" style="width: 70px">深夜<br>労働<br>時間計</th>
+										<th scope="col" style="width: 70px">深夜<br>残業<br>時間計</th>
+										<th scope="col" style="width: 70px">法定外<br>休日<br>時間計</th>
+										<th scope="col" style="width: 70px">法定外<br>休日<br>深夜<br>時間計</th>
+										<th scope="col" style="width: 70px">法定内<br>休日<br>時間計</th>
+										<th scope="col" style="width: 70px">法定内<br>休日<br>深夜<br>時間計</th>
+										<th scope="col" style="width: 70px">不就労<br>時間計</th>
+										<th scope="col" style="width: 100px">入力日</th>
+										<th scope="col" style="width: 100px">入力者</th>
+										<th scope="col" style="width: 100px">更新日</th>
+										<th scope="col" style="width: 100px">更新者</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="workingHour : *{workingHourResultList}">
+										<td><input class="form-check-input mt-1 checks" type="checkbox" text="" aria-label="Checkbox for following text input" th:field="*{workingHourResultList[__${workingHour.index}__].check}"></td>
+										<td hidden th:text="${workingHour.seqId}"></td>
+										<td th:text="${workingHour.employeeId}"></td>
+										<td><a th:text="${workingHour.employeeName}" th:href="@{/SWCNM002(seqId=${workingHour.seqId})}"></a></td>
+										<td th:text="${workingHour.yearMonth}"></td>
+										<td th:text="${workingHour.statusName}"></td>
+										<td th:text="${workingHour.clientName}"></td>
+										<td th:text="${workingHour.workingSum}"></td>
+										<td th:text="${workingHour.overtimeSum}"></td>
+										<td th:text="${workingHour.midnightSum}"></td>
+										<td th:text="${workingHour.midnightOvertimeSum}"></td>
+										<td th:text="${workingHour.nonLegalHolidaySum}"></td>
+										<td th:text="${workingHour.nonLegalHolidayMidnightSum}"></td>
+										<td th:text="${workingHour.legalHolidaySum}"></td>
+										<td th:text="${workingHour.legalHolidayMidnightSum}"></td>
+										<td th:text="${workingHour.notWorkingSum}"></td>
+										<td th:text="${workingHour.createdAt}"></td>
+										<td th:text="${workingHour.createdUserName}"></td>
+										<td th:text="${workingHour.updatedAt}"></td>
+										<td th:text="${workingHour.updatedUserName}"></td>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].seqId}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].employeeId}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].employeeName}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].yearMonth}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].statusName}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].clientName}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].workingSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].overtimeSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].midnightSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].midnightOvertimeSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].nonLegalHolidaySum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].nonLegalHolidayMidnightSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].legalHolidaySum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].legalHolidayMidnightSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].notWorkingSum}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].createdAt}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].createdUserName}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].updatedAt}"></input>
+										<input type="hidden" th:field="*{workingHourResultList[__${workingHour.index}__].updatedUserName}"></input>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<span th:if="${size}!=0">
+							<div th:fragment='paginationbar'>
+								<ul class="paging" style="text-align: center;list-style-type: none;">
+									<li style="display: inline-block">
+										<span th:if="${pages.first}">←　前のページ</span>
+										<a th:if="${not pages.first}" th:href="@{${url}(page=(${pages.number-1}))}">←　前のページ</a>
+									</li>
+									<li style="display: inline-block" th:each="i:${#numbers.sequence(0, pages.totalPages-1)}">
+										<span th:if="${i}==${pages.number}" th:text="${i+1}"></span>
+										<a th:if="${i}==${pages.number-1}" th:href="@{${url}(page=${i})}"><span th:text="${i+1}"></span></a>
+										<a th:if="${i}==${pages.number+1}" th:href="@{${url}(page=${i})}"><span th:text="${i+1}"></span></a>
+									</li>
+									<li style="display: inline-block">
+										<div>...</div>
+									</li>
+									<li style="display: inline-block">
+										<span th:if="${pages.last}" th:text="${pages.totalPages}"></span>
+										<a th:if="${not pages.last}" th:href="@{${url}(page=(${pages.totalPages-1}))}"><span th:text="${pages.totalPages}"></span></a>
+									</li>
+									<li style="display: inline-block">
+										<span th:if="${pages.last}">次のページ　→</span>
+										<a th:if="${not pages.last}" th:href="@{${url}(page=(${pages.number+1}))}">次のページ　→</a>
+									</li>
+								</ul>
+							</div>
+						</span>
+					</form>
+				</div>
+			</main>
+		</div>
+		<script>
+			// Example starter JavaScript for disabling form submissions if there are invalid fields
+			(function () {
+				'use strict';
+				window.addEventListener('load', function () {
+					// Fetch all the forms we want to apply custom Bootstrap validation styles to
+					var forms = document.getElementsByClassName('needs-validation');
+					// Loop over them and prevent submission
+					var validation = Array.prototype.filter.call(forms, function (form) {
+						form.addEventListener('submit', function (event) {
+							if (form.checkValidity() === false) {
+								event.preventDefault();
+								event.stopPropagation();
+							}
+							form.classList.add('was-validated');
+						}, false);
+					});
+				}, false);
+			})();
+		</script>
+		<script th:src="@{/js/jquery-3.5.1.min.js}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+			integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+			crossorigin="anonymous"></script>
+		<script th:src="@{/js/bootstrap/bootstrap.min.js}"></script>
+		<script th:src="@{/js/SWCNM001.js}"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
+		<script>
+			const config = {
+				allowInput: true,
+				wrap: true,
+				locale: 'ja',
+				plugins: [
+					new monthSelectPlugin({
+						dateFormat: "Y/m"
+					})
+				]
+			}
+			flatpickr('.flatpickr', config);
+		</script>
+	</body>
+</html>

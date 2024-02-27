@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="../static/css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="../static/css/menu.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+		<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
+
+		<title>メニュー</title>
+	</head>
+
+	<body>
+	<div th:fragment="menu" id="mainDiv">
+				<div>
+				<button type="button" class="btn" style="color: white;background-color: #f19f4d;font-weight: bold;font-size: 1.0rem;" id="menuOpen">＞</button>
+			</div>
+		<nav id="menu" th:fragment="menu">
+			<!-- <button class="btn-menu">メニュー</button>  -->
+			<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+				<button type="button" class="btn" style="color: white;background-color: #f19f4d;font-weight: bold;font-size: 1.0rem;" id="menuClose">＜</button>
+			</div>
+			<ul class="nav flex-column m-0 px-3 py-1">
+				<li class="nab-item mb-2"><span class="title">◆　労働時間計算</span>
+					<ul class="submenu">
+						<li class="nab-item mb-0"><a href="SWCNM002.html" class="nav-link" target="_blank">労働時間新規登録</a></li>
+						<li class="nab-item mb-0"><a href="SWCNM001.html" class="nav-link" target="_blank">労働時間一覧</a></li>
+						<li class="nab-item mb-0"><a href="SWCOP001.html" class="nav-link" target="_blank">給与計算CSV出力</a></li>
+					</ul>
+				</li>
+				<hr style="color: white" size="5">
+				<li class="nab-item mb-2" id="information"><span class="title">◆　勤怠情報</span>
+					<ul class="submenu">
+						<li class="nab-item mb-0"><a href="#" class="nav-link">勤怠情報新規登録</a></li>
+						<li class="nab-item mb-0"><a href="#" class="nav-link">勤怠情報一覧</a></li>
+						<li class="nab-item mb-0"><a href="#" class="nav-link">勤怠情報CSV登録</a></li>
+					</ul>
+				</li>
+				<hr style="color: white" size="5">
+				<li class="nab-item mb-2" id="admin"><span class="title">◆　マスタ</span>
+					<ul class="submenu">
+						<li class="nab-item mb-0"><a href="#" class="nav-link">フレックタイムマスタ一覧</a></li>
+						<li class="nab-item mb-0"><a th:href="@{/calendar/list}" class="nav-link">カレンダーマスタ一覧</a></li>
+						<li class="nab-item mb-0"><a href="#" class="nav-link">祝日マスタ一覧</a></li>
+						<li class="nab-item mb-0"><a th:href="@{/client/list}" class="nav-link">顧客マスタ一覧</a></li>
+						<li class="nab-item mb-0"><a th:href="@{/employee/list}" class="nav-link">社員マスタ一覧</a></li>
+						<li class="nab-item mb-0"><a th:href="@{/user/list}" class="nav-link">ユーザマスタ一覧</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+		</div>
+		<script src="../static/js/index.js"></script>
+		<script src="../static/js/menu.js"></script>
+	</body>
+</html>
+フッター
+© 2023 GitHub, Inc.

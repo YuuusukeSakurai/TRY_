@@ -1,0 +1,26 @@
+a.input-button {
+    text-decoration: none;
+    border: 1px solid #bbb;
+    display: block;
+    padding: 4px;
+    border-left: 0;
+    cursor: pointer;
+    align-self: center;
+    justify-content: center;
+    line-height: 1;
+    background-color: #e9ecef;
+}
+
+.img-white {
+	filter: brightness(1) invert(0);
+}
+
+.dropdown-item:hover {
+	background-color: #fbaa31;
+}
+
+.btn-def {
+	color: white;
+	background-color: #4484ce;
+	width: 100px;
+}

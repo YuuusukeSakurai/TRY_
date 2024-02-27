@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="ja">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="css/SAMNM001.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+		<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
+		
+		<title>WHC:勤怠情報一覧</title>
+	</head>
+
+	<body>
+		<header>
+		   <!--ヘッダー部分は、Tymeleafで共通化すること-->
+		   <nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: white">
+		     <a class="navbar-brand" href="SCMCM001.html" target="_blank">
+				<span class="ml-1" style="color: #f36304; font-size: 1.0em;font-weight: bold; font-family: 'MS 明朝'">　労働時間計算システム </span>
+		     </a>
+            
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			  <ul class="navbar-nav me-auto">
+			  </ul>
+			  
+			  <ul class="navbar-nav">
+			    <li class="nav-item dropdown">
+			      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #f36304">
+			        [Acount Name]<span class="visually-hidden">(current)</span>
+			      </a>
+			      <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="background-color: white">
+			        <a class="dropdown-item" href="SCMCM004.html" style="color: #f36304">パスワード変更</a>
+			        <div class="dropdown-divider"></div>
+			        <a class="dropdown-item" href="SLGCM001.html" style="color: #f36304">ログアウト</a>
+			      </div>
+			    </li>
+			  </ul>
+			</div>
+		   </nav>
+		   <!--ヘッダー部分は、Tymeleafで共通化すること-->
+ 		</header>
+
+		<div class="d-flex flex-row" style="height: 1000px">
+		
+			<object data="menu.html" type="text/html" style="height: 1000px"></object>
+		
+			<main class="w-100 bg-light">
+				<div class="container-fluid bg-white border py-3 my-3" style="width: 1580px">
+					<div class="card shadow bg-light">
+						
+						<h3 class="font-weight-bold p-2">検索条件</h3>
+						<h5 class="font-weight-bold p-2">共通検索条件</h5>
+						<div class="card-body p-2" style="display: flex">
+							<div class="input-group mb-2 mx-2">
+								<span class="input-group-text">社員番号</span>
+								<input type="text" aria-label="emNo" class="form-control">
+							</div>
+							<div class="input-group mb-2 mx-2">
+								<span class="input-group-text">社員氏名</span>
+								<input type="text" class="form-control">
+							</div>
+							<div class="input-group mb-2 mx-2" style="width: 200rem">
+								<button type="button" class="btn btn-def">社員選択</button>
+							</div>
+						</div>
+						
+						<div class="card-body ps-2 pt-0 pb-2" style="display: flex">
+							
+							<div class="flatpickr input-group p-2 mb-0" data-id="strap" style="width: 400px">
+								<span class="input-group-text me-3" style="width: 90px">登録日</span>
+								<input id="inputDate" type="text" class="" placeholder="登録日(From)" style="width: 120px" data-input>
+									<a class="input-button" title="toggle" data-toggle>
+								 		<i class="material-icons">date_range</i>
+									</a>
+									<a class="input-button" title="clear" data-clear>
+								    	<i class="material-icons">clear</i>
+									</a>
+							</div>
+							<div class="flatpickr input-group p-2 mb-0" data-id="strap">
+								<span class="input-group-text me-4" style="border-radius: 0rem">～</span>
+								<input id="inputDate" type="text" class="" placeholder="登録日(To)" style="width: 120px" data-input>
+									<a class="input-button" title="toggle" data-toggle>
+								 		<i class="material-icons">date_range</i>
+									</a>
+									<a class="input-button" title="clear" data-clear>
+								    	<i class="material-icons">clear</i>
+									</a>
+							</div>
+								
+						</div>
+						<div class="card-body ps-2 pt-0 pb-0" style="display: flex">
+							
+							<div class="flatpickr input-group p-2 mb-3" data-id="strap" style="width: 400px">
+								<span class="input-group-text me-3" style="width: 90px">更新日</span>
+								<input id="inputDate" type="text" class="" placeholder="更新日(From)" style="width: 120px" data-input>
+									<a class="input-button" title="toggle" data-toggle>
+								 		<i class="material-icons">date_range</i>
+									</a>
+									<a class="input-button" title="clear" data-clear>
+								    	<i class="material-icons">clear</i>
+									</a>
+							</div>
+							<div class="flatpickr input-group p-2 mb-3" data-id="strap">
+								<span class="input-group-text me-4" style="border-radius: 0rem">～</span>
+								<input id="inputDate" type="text" class="" placeholder="更新日(To)" style="width: 120px" data-input>
+									<a class="input-button" title="toggle" data-toggle>
+								 		<i class="material-icons">date_range</i>
+									</a>
+									<a class="input-button" title="clear" data-clear>
+								    	<i class="material-icons">clear</i>
+									</a>
+							</div>
+								
+						</div>
+
+						<div class="card-body ps-2 pt-0" style="display: flex">
+							<span class="input-group-text mb-3 mx-2">検索対象</span>
+							
+							<span class="input-group-text mb-3 mx-1">休暇申請</span>
+							<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+							
+							<span class="input-group-text mb-3 mx-1">電話等連絡</span>
+							<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+							<span class="input-group-text mb-3 mx-1">給与変更関連</span>
+							<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+						</div>
+
+						<h5 class="font-weight-bold p-2">個別詳細検索条件</h5>
+						<h6 class="font-weight-bold px-2 py-0">◆休暇申請</h6>
+						<div id="application">
+							<div class="card-body ps-2 pt-0" style="display: flex">
+								
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap" style="width: 460px">
+									<span class="input-group-text me-3" style="width: 120px">休暇取得日</span>
+									<input id="inputDate" type="text" class="" placeholder="取得日(From)" style="width: 120px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap">
+									<span class="input-group-text me-4" style="border-radius: 0rem">～</span>
+									<input id="inputDate" type="text" class="" placeholder="取得日(To)" style="width: 120px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+									
+							</div>
+							<div class="card-body ps-2 pt-0" style="display: flex" style="width: 50px">
+								<span class="input-group-text mb-3 mx-2">申請種別</span>
+								
+								<span class="input-group-text mb-3 mx-1">有給</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+								
+								<span class="input-group-text mb-3 mx-1">午前休</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">午後休</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">代休</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+								
+								<span class="input-group-text mb-3 mx-1">遅刻</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">早退</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">中抜け</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">欠勤</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">特別休暇</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+							</div>
+						</div>
+
+						<h6 class="font-weight-bold px-2 py-0">◆電話等連絡</h6>
+						<div id="contact">
+							<div class="card-body ps-2 pt-0" style="display: flex">
+								
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap" style="width: 460px">
+									<span class="input-group-text me-3" style="width: 120px">連絡日</span>
+									<input id="inputDate" type="text" class="" placeholder="連絡日(From)" style="width: 120px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap">
+									<span class="input-group-text me-4" style="border-radius: 0rem">～</span>
+									<input id="inputDate" type="text" class="" placeholder="連絡日(To)" style="width: 120px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+									
+							</div>
+							<div class="card-body ps-2 pt-0" style="display: flex" style="width: 50px">
+								<span class="input-group-text mb-3 mx-2">体調不良有無</span>
+								
+								<span class="input-group-text mb-3 mx-1">有</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">無</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+							</div>
+						</div>
+
+						<h6 class="font-weight-bold px-2 py-0">◆給与変更関連</h6>
+						<div id="salary">
+							<div class="card-body ps-2 pt-0" style="display: flex">
+								
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap" style="width: 690px">
+									<span class="input-group-text me-3" style="width: 220px">該当日 or 開始日 or 休出日</span>
+									<input id="inputDate" type="text" class="" placeholder="日付(From)" style="width: 120px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap">
+									<span class="input-group-text me-4" style="border-radius: 0rem">～</span>
+									<input id="inputDate" type="text" class="" placeholder="日付(To)" style="width: 120px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+									
+							</div>
+							<div class="card-body ps-2 pt-0" style="display: flex">
+								
+								<div class="flatpickr input-group p-2 mb-0" data-id="strap" style="width: 690px">
+									<span class="input-group-text me-3" style="width: 140px">代休取得予定月</span>
+									<input id="inputDate" type="text" class="" placeholder="予定月" style="width: 100px" data-input>
+										<a class="input-button" title="toggle" data-toggle>
+											<i class="material-icons">date_range</i>
+										</a>
+										<a class="input-button" title="clear" data-clear>
+											<i class="material-icons">clear</i>
+										</a>
+								</div>
+									
+							</div>
+							<div class="card-body ps-2 pt-0" style="display: flex" style="width: 50px">
+								<span class="input-group-text mb-0 mx-2">区分</span>
+								
+								<span class="input-group-text mb-0 mx-1">就業場所変更</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-0 mx-1">転居</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-0 mx-1">帰社・自社業務</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-0 mx-1">健康診断</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-0 mx-1">勤務時間変更</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-0 mx-1">代休取得</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+							</div>
+
+							<div class="card-body ps-2 pt-0" style="display: flex" style="width: 50px">							
+								<span class="input-group-text mb-3" style="margin-left: 4.9em; margin-right: 0.25rem;">入社・退職</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">休職</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">給与日割り</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">住民税</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">その他給与支給・控除等</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+
+								<span class="input-group-text mb-3 mx-1">その他</span>
+								<input class="form-check-input mt-2 mx-3" type="checkbox" value="" aria-label="Checkbox for following text input">
+							</div>
+						</div>
+
+					    <div class="card-body ps-2 pt-0">
+					    	<button type="button" class="btn btn-def mb-3 mx-3">検索</button>
+					    </div>
+					</div>
+
+				    <div class="text-nowrap table-responsive">
+					  <h3 class="font-weight-bold p-2 mt-3">休暇申請</h3>
+					  <button type="button" class="btn btn-def my-0 mx-1" style="width: 150px">選択行削除</button>
+				      <table class="table table-sm table-striped table-bordered text-center mt-2">
+				        <thead>
+				          <tr bgcolor="royalblue" style="color: white">
+							<th scope="col" style="width: 30px"><input class="form-check-input m-0" type="checkbox" value="" aria-label="Checkbox for following text input"></th>
+				            <th scope="col" style="width: 50px">社員<br>番号</th>
+				            <th scope="col" style="width: 100px">社員氏名</th>
+				            <th scope="col" style="width: 100px">取得日</th>
+				            <th scope="col" style="width: 80px">申請種別</th>
+				            <th scope="col" style="width: 230px">理由</th>
+				            <th scope="col" style="width: 70px">出退勤<br>時間</th>
+				            <th scope="col" style="width: 100px">休出日</th>
+				            <th scope="col" style="width: 70px">休出時間</th>
+							<th scope="col" style="width: 300px">備考</th>
+				            <th scope="col" style="width: 100px">登録日</th>
+				            <th scope="col" style="width: 100px">登録者</th>
+				            <th scope="col" style="width: 100px">更新日</th>
+				            <th scope="col" style="width: 100px">更新者</th>
+				          </tr>
+				        </thead>
+				        <tbody>
+				          <tr>
+							<td style="width: 30px"><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+				            <td style="width: 50px">0001</td>
+				            <td style="width: 100px"><a href="SWHCIN002.html">ネクサス太郎</a></td>
+				            <td style="width: 100px">2022/11/01</td>
+				            <td style="width: 80px">遅刻</td>
+				            <td style="width: 230px">遅刻理由</td>
+				            <td style="width: 70px">10:00</td>
+				            <td style="width: 100px"></td>
+				            <td style="width: 73px"></td>
+							<td style="width: 300px">備考</td>
+				            <td style="width: 100px">2022/11/16</td>
+				            <td style="width: 100px">ネクサス</td>
+				            <td style="width: 100px">2022/11/16</td>
+				            <td style="width: 99px">ネクサス</td>
+				          </tr>
+						  <tr>
+							<td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+				            <td>0002</td>
+				            <td><a href="SWHCIN002.html">ネクサス次郎</a></td>
+				            <td>2022/11/10</td>
+				            <td>早退</td>
+				            <td>早退理由</td>
+				            <td>17:00</td>
+				            <td></td>
+				            <td></td>
+							<td>備考</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				          </tr>
+						  <tr>
+							<td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+				            <td>0003</td>
+				            <td><a href="SWHCIN002.html">ネクサス三郎</a></td>
+				            <td>2022/11/21</td>
+				            <td>代休</td>
+				            <td></td>
+				            <td></td>
+				            <td>2022/11/05</td>
+				            <td>8.0</td>
+							<td>備考</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				          </tr>
+						  <tr>
+							<td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+				            <td>0004</td>
+				            <td><a href="SWHCIN002.html">ネクサス四郎</a></td>
+				            <td>2022/11/22</td>
+				            <td>有給</td>
+				            <td></td>
+				            <td></td>
+				            <td></td>
+				            <td></td>
+							<td>備考</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				          </tr>
+						  <tr>
+							<td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+				            <td>0005</td>
+				            <td><a href="SWHCIN002.html">ネクサス五郎</a></td>
+				            <td>2022/11/23</td>
+				            <td>午前休</td>
+				            <td></td>
+				            <td></td>
+				            <td></td>
+				            <td></td>
+							<td>備考</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				          </tr>
+						  <tr>
+							<td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+				            <td>0006</td>
+				            <td><a href="SWHCIN002.html">ネクサス六郎</a></td>
+				            <td>2022/11/24</td>
+				            <td>午後休</td>
+				            <td></td>
+				            <td></td>
+				            <td></td>
+				            <td></td>
+							<td>備考</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				            <td>2022/11/16</td>
+				            <td>ネクサス</td>
+				          </tr>
+				        </tbody>
+				      </table>
+				    </div>
+				    <div align="center">
+						<a class="mx-3">←　前のページ</a>
+						<a class="mx-1">1</a>
+						<a class="mx-1" href="IR010.html">2</a>
+						<a class="mx-1" href="IR010.html">3</a>
+						<a class="mx-1">...</a>
+						<a class="mx-1" href="IR010.html">10</a>
+						<a class="mx-3" href="IR010.html">次のページ　→</a>
+				    </div>
+
+					<div class="text-nowrap table-responsive">
+						<h3 class="font-weight-bold p-2 mt-3">電話等連絡</h3>
+						<button type="button" class="btn btn-def my-0 mx-1" style="width: 150px">選択行削除</button>
+						<table class="table table-sm table-striped table-bordered text-center mt-2">
+						  <thead>
+							<tr bgcolor="royalblue" style="color: white">
+							  <th scope="col" style="width: 30px"><input class="form-check-input m-0" type="checkbox" value="" aria-label="Checkbox for following text input"></th>
+							  <th scope="col" style="width: 50px">社員<br>番号</th>
+							  <th scope="col" style="width: 100px">社員氏名</th>
+							  <th scope="col" style="width: 100px">連絡日</th>
+							  <th scope="col" style="width: 70px">連絡時間</th>
+							  <th scope="col" style="width: 90px">連絡手段</th>
+							  <th scope="col" style="width: 340px">内容</th>
+							  <th scope="col" style="width: 50px">体調<br>不良</th>
+							  <th scope="col" style="width: 100px">発症日</th>
+							  <th scope="col" style="width: 50px">熱</th>
+							  <th scope="col" style="width: 50px">咳</th>
+							  <th scope="col" style="width: 50px">倦<br>怠<br>感</th>
+							  <th scope="col" style="width: 50px">味覚<br>嗅覚<br>異常</th>
+							  <th scope="col" style="width: 100px">登録日</th>
+							  <th scope="col" style="width: 100px">登録者</th>
+							  <th scope="col" style="width: 100px">更新日</th>
+							  <th scope="col" style="width: 100px">更新者</th>
+							</tr>
+						  </thead>
+						  <tbody>
+							<tr>
+							  <td style="width: 30px"><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td style="width: 50px">0001</td>
+							  <td style="width: 100px"><a href="SWHCIN002.html">ネクサス太郎</a></td>
+							  <td style="width: 100px">2022/11/01</td>
+							  <td style="width: 73px">08:30</td>
+							  <td style="width: 90px">電話</td>
+							  <td style="width: 340px">遅刻</td>
+							  <td style="width: 50px"></td>
+							  <td style="width: 100px"></td>
+							  <td style="width: 50px"></td>
+							  <td style="width: 50px"></td>
+							  <td style="width: 50px"></td>
+							  <td style="width: 50px"></td>
+							  <td style="width: 100px">2022/11/16</td>
+							  <td style="width: 100px">ネクサス</td>
+							  <td style="width: 100px">2022/11/16</td>
+							  <td style="width: 99px">ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0002</td>
+							  <td><a href="SWHCIN002.html">ネクサス次郎</a></td>
+							  <td>2022/11/02</td>
+							  <td>07:00</td>
+							  <td>メール</td>
+							  <td>体調不良</td>
+							  <td>✓</td>
+							  <td>2022/11/01</td>
+							  <td>有</td>
+							  <td>有</td>
+							  <td>有</td>
+							  <td>有</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0003</td>
+							  <td><a href="SWHCIN002.html">ネクサス三郎</a></td>
+							  <td>2022/11/02</td>
+							  <td>15:00</td>
+							  <td>電話</td>
+							  <td>早退連絡</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0004</td>
+							  <td><a href="SWHCIN002.html">ネクサス四郎</a></td>
+							  <td>2022/11/03</td>
+							  <td>08:00</td>
+							  <td>チャット</td>
+							  <td>突発休連絡</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0005</td>
+							  <td><a href="SWHCIN002.html">ネクサス五郎</a></td>
+							  <td>2022/11/04</td>
+							  <td>08:00</td>
+							  <td>チャット</td>
+							  <td>突発休連絡</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0006</td>
+							  <td><a href="SWHCIN002.html">ネクサス六郎</a></td>
+							  <td>2022/11/05</td>
+							  <td>08:00</td>
+							  <td>チャット</td>
+							  <td>突発休連絡</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+						  </tbody>
+						</table>
+					</div>
+					<div align="center">
+						  <a class="mx-3">←　前のページ</a>
+						  <a class="mx-1">1</a>
+						  <a class="mx-1" href="IR010.html">2</a>
+						  <a class="mx-1" href="IR010.html">3</a>
+						  <a class="mx-1">...</a>
+						  <a class="mx-1" href="IR010.html">10</a>
+						  <a class="mx-3" href="IR010.html">次のページ　→</a>
+					</div>
+
+					<div class="text-nowrap table-responsive">
+						<h3 class="font-weight-bold p-2 mt-3">給与変更関連</h3>
+						<button type="button" class="btn btn-def my-0 mx-1" style="width: 150px">選択行削除</button>
+						<table class="table table-sm table-striped table-bordered text-center mt-2">
+						  <thead>
+							<tr bgcolor="royalblue" style="color: white">
+							  <th scope="col" style="width: 30px"><input class="form-check-input m-0" type="checkbox" value="" aria-label="Checkbox for following text input"></th>
+							  <th scope="col" style="width: 50px">社員<br>番号</th>
+							  <th scope="col" style="width: 100px">社員氏名</th>
+							  <th scope="col" style="width: 200px">区分</th>
+							  <th scope="col" style="width: 100px">該当日<br>休出日<br>開始日</th>
+							  <th scope="col" style="width: 100px">終了日</th>
+							  <th scope="col" style="width: 70px">開始<br>時間</th>
+							  <th scope="col" style="width: 70px">終了<br>時間</th>
+							  <th scope="col" style="width: 90px">代休取得<br>予定月</th>
+							  <th scope="col" style="width: 320px">備考</th>
+							  <th scope="col" style="width: 100px">登録日</th>
+							  <th scope="col" style="width: 100px">登録者</th>
+							  <th scope="col" style="width: 100px">更新日</th>
+							  <th scope="col" style="width: 100px">更新者</th>
+							</tr>
+						  </thead>
+						  <tbody>
+							<tr>
+							  <td style="width: 30px"><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td style="width: 50px">0001</td>
+							  <td style="width: 100px"><a href="SWHCIN002.html">ネクサス太郎</a></td>
+							  <td style="width: 200px">帰社・自社業務</td>
+							  <td style="width: 100px">2022/11/21</td>
+							  <td style="width: 100px"></td>
+							  <td style="width: 70px"></td>
+							  <td style="width: 70px"></td>
+							  <td style="width: 90px"></td>
+							  <td style="width: 320px">オフィスミーティング</td>
+							  <td style="width: 100px">2022/11/16</td>
+							  <td style="width: 100px">ネクサス</td>
+							  <td style="width: 100px">2022/11/16</td>
+							  <td style="width: 99px">ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0002</td>
+							  <td><a href="SWHCIN002.html">ネクサス次郎</a></td>
+							  <td>勤務時間変更</td>
+							  <td>2022/11/24</td>
+							  <td>2022/11/25</td>
+							  <td>10:00</td>
+							  <td>19:00</td>
+							  <td></td>
+							  <td>時差出勤</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0003</td>
+							  <td><a href="SWHCIN002.html">ネクサス三郎</a></td>
+							  <td>就業場所変更</td>
+							  <td>2022/12/01</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0004</td>
+							  <td><a href="SWHCIN002.html">ネクサス四郎</a></td>
+							  <td>転居</td>
+							  <td>2022/12/01</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0005</td>
+							  <td><a href="SWHCIN002.html">ネクサス五郎</a></td>
+							  <td>代休取得</td>
+							  <td>2022/11/13</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/12</td>
+							  <td>代休取得予定</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+							<tr>
+							  <td><input class="form-check-input mt-1" type="checkbox" value="" aria-label="Checkbox for following text input"></td>
+							  <td>0006</td>
+							  <td><a href="SWHCIN002.html">ネクサス六郎</a></td>
+							  <td>健康診断</td>
+							  <td>2022/11/15</td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td></td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							  <td>2022/11/16</td>
+							  <td>ネクサス</td>
+							</tr>
+						  </tbody>
+						</table>
+					</div>
+					<div align="center">
+						  <a class="mx-3">←　前のページ</a>
+						  <a class="mx-1">1</a>
+						  <a class="mx-1" href="IR010.html">2</a>
+						  <a class="mx-1" href="IR010.html">3</a>
+						  <a class="mx-1">...</a>
+						  <a class="mx-1" href="IR010.html">10</a>
+						  <a class="mx-3" href="IR010.html">次のページ　→</a>
+					</div>
+			  </div>
+		
+		  </main>
+		</div>
+		  <script>
+		    // Example starter JavaScript for disabling form submissions if there are invalid fields
+		    (function () {
+		      'use strict';
+		      window.addEventListener('load', function () {
+		        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+		        var forms = document.getElementsByClassName('needs-validation');
+		        // Loop over them and prevent submission
+		        var validation = Array.prototype.filter.call(forms, function (form) {
+		          form.addEventListener('submit', function (event) {
+		            if (form.checkValidity() === false) {
+		              event.preventDefault();
+		              event.stopPropagation();
+		            }
+		            form.classList.add('was-validated');
+		          }, false);
+		        });
+		      }, false);
+		    })();
+		  </script>
+		  <script src="js/jquery-3.5.1.min.js"></script>
+		  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+		    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+		    crossorigin="anonymous"></script>
+		  <script src="js/bootstrap/bootstrap.min.js"></script>
+		  <script src="js/SAMNM001.js"></script>
+		  
+			<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+			<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
+			<script>
+				const config = {
+					wrap: true,
+					locale: 'ja',
+					dateFormat: "Y/m/d"
+				}
+				flatpickr('.flatpickr', config);
+			</script>
+		</body>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link href="css/index.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+		<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
+		
+		<title>WHC:労働時間登録</title>
+	</head>
+
+	<body>
+		<header>
+		   <!--ヘッダー部分は、Tymeleafで共通化すること-->
+		   <nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: #f36304">
+			<a class="navbar-brand" href="ML010.html">
+			   <span class="ml-1" style="color: white; font-size: 1.0em;font-weight: bold; font-family: 'MS 明朝'">　労働時間計算システム </span>
+			</a>
+		   
+		   <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			 <ul class="navbar-nav me-auto">
+			 </ul>
+			 
+			 <ul class="navbar-nav">
+			   <li class="nav-item dropdown">
+				 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white">
+				   [Acount Name]<span class="visually-hidden">(current)</span>
+				 </a>
+				 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="background-color: white">
+				   <a class="dropdown-item" href="LF020.html" style="color: #f36304">パスワード変更</a>
+				   <div class="dropdown-divider"></div>
+				   <a class="dropdown-item" href="LF010.html" style="color: #f36304">ログアウト</a>
+				 </div>
+			   </li>
+			 </ul>
+		   </div>
+		  </nav>
+ 		</header>
+		
+		<div class="d-flex flex-row" style="height: 1860px">
+		
+			<object data="menu.html" type="text/html"></object>
+		
+			<main class="w-100 h-100 bg-light">
+				<div class="container-fluid bg-white border py-3 my-3" style="width: 1400px">
+				
+					<button id="btn-back" type="button" class="btn btn-link py-0 my-2">＜＜戻る</button>
+				
+					<div class="flatpickr input-group mb-3" data-id="strap">
+					  <input id="inputDate" type="text" class="" placeholder="登録年月" style="width: 120px" oninput="inputChange()" data-input>
+					  <a class="input-button" title="toggle" data-toggle>
+					    <i class="material-icons">date_range</i>
+					  </a>
+					  <a class="input-button" title="clear" data-clear>
+					    <i class="material-icons">clear</i>
+					  </a>
+					</div>
+					<div id="output"></div>
+					
+					<div class="input-group mb-3">
+				      <span class="input-group-text">社員番号</span>
+				      <input type="text" aria-label="emNo" class="form-control" style="width: 50px">
+				      <span class="input-group-text">社員氏名</span>
+				      <input type="text" class="form-control" style="width: 150px">
+				      <button type="button" class="btn btn-def">社員選択</button>
+				    </div>
+				    
+				    <button id="btn-calc" type="button" class="btn btn-def mb-3" style="visibility: hidden">計算</button>
+				    <button id="btn-pdf" type="button" class="btn btn-def mb-3" style="visibility: hidden">PDF出力</button>
+				    
+					<table id="timeCard" class="table table-bordered" style="overflow-y: scroll; visibility: hidden">
+					  <thead id="timeHeader">
+					    <tr class="table-primary">
+					      <th scope="col" style="text-align: center;width: 30px">日</th>
+					      <th scope="col" style="text-align: center;width: 30px">曜</th>
+					      <th scope="col" style="text-align: center;width: 30px">休</th>
+					      <th scope="col" style="text-align: center;width: 60px">種別</th>
+					      <th scope="col" style="text-align: center;width: 70px">出勤時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">退出時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">勤務時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">残業時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">深夜時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">深夜残業</th>
+						  <th scope="col" style="text-align: center;width: 70px">法定外<br>休日</th>
+					      <th scope="col" style="text-align: center;width: 70px">法定外<br>休日<br>深夜時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">法定内<br>休日</th>
+					      <th scope="col" style="text-align: center;width: 70px">法定内<br>休日<br>深夜時間</th>
+					      <th scope="col" style="text-align: center;width: 70px">不就労</th>
+					      <th scope="col" style="text-align: center;width: 150px">作業内容</th>
+					    </tr>
+					  </thead>
+					  <tbody id="timeThead">
+					  </tbody>
+					</table>
+					<button id="btn-tmpsave" type="button" class="btn btn-def mb-3" style="visibility: hidden">一時保存</button>
+					<button id="btn-regist" type="button" class="btn btn-def mb-3" style="visibility: hidden">登録</button>
+					
+				</div>
+			</main>
+		</div>
+
+		
+		<script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+		<script src="js/index.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
+		<script>
+			const config = {
+				wrap: true,
+				locale: 'ja',
+				plugins: [
+					new monthSelectPlugin({
+						dateFormat: "Y年m月度"
+					})
+				]
+			}
+			flatpickr('.flatpickr', config);
+		</script>
+	</body>
+</html>

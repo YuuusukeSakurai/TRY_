@@ -1,0 +1,43 @@
+@charset "UTF-8";
+
+/* Inputボタン */
+a.input-button {
+    text-decoration: none;
+    border: 1px solid #bbb;
+    display: block;
+    padding: 4px;
+    border-left: 0;
+    cursor: pointer;
+    align-self: center;
+    justify-content: center;
+    line-height: 1;
+    background-color: #e9ecef;
+}
+
+/* イメージ */
+.img-white {
+	filter: brightness(1) invert(0);
+}
+
+/* ドロップダウンリストのカーソルイン */
+.dropdown-item:hover {
+	background-color: #fbaa31;
+}
+
+/* デフォルトボタン */
+.btn-def {
+	color: white;
+	background-color: #4484ce;
+	width: 100px;
+}
+
+/*スクロールの先頭行を一番上で固定（thタグを囲むtrタグにid付与）*/
+#listTable{
+	position: sticky;
+	top: 0;
+}
+
+/*エラーメッセージ*/
+.error{
+	color: red;
+}

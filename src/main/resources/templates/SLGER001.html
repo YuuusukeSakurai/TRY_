@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css">
+    <title>ログインエラー</title>
+
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <div class="card mx-auto m-5 mx-3 shadow" style="max-width: 40rem;">
+            <div class="card-body">
+                <div class="text-center fs-1" style="color: deeppink">ログインエラー</div>
+                <form class="needs-validation" action="ML010.html" method="get" novalidate>
+                    <div class="form-group mx-3 my-3">
+                        <label class="fs-5">アカウントは存在しますが、システムにログインする権限がありません。</label>
+                        <label class="fs-5">システムへログインする場合は、管理者へ問い合わせてください。</label>
+                    </div>
+                </form>
+                
+                <div class="text-center fs-3 mb-3"><a href="SLGCM001.html">戻る</a></div>
+                
+                <small class="text-muted mx-3 mt-3">
+                    Copyright © Nexus corporation. All Rights Reserved.
+                </small>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+    <script src="js/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+</body>
+
+</html>

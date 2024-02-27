@@ -1,0 +1,56 @@
+/* ダイアログ用CSS */
+.modalArea {
+    position: fixed;
+    z-index: 10;
+
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.clientModal {
+    display: none;
+}
+
+.employeeModal {
+    display: none;
+}
+
+.listScroll {
+    height: 500px;
+    overflow: auto;
+}
+
+.modalBg {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 30, 30, 0.9);
+}
+
+.modalWrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: auto;
+    max-width: 1000px;
+    padding: 10px 30px;
+    background-color: #fff;
+}
+
+.closeModal {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+.top-margin10 {
+    margin-top: 10px;
+}
+
+.top-margin5 {
+    margin-top: 5px;
+}

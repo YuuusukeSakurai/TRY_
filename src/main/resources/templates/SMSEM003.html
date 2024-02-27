@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>有給休暇詳細</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- 共通ヘッダー -->
+    </header>
+
+    <nav>
+        <!-- メニュー -->
+    </nav>
+
+    <button onclick="goBack()">戻る</button>
+
+    <h2>有休概要</h2>
+    <p>社員番号: <span id="employeeNumber"></span></p>
+    <p>社員氏名: <span id="employeeName"></span></p>
+    <p>基準日: <span id="referenceDate"></span></p>
+    <p>残日数-当年度分: <span id="remainingDaysCurrentYear"></span></p>
+    <p>残日数-前年度分: <span id="remainingDaysLastYear"></span></p>
+
+    <button onclick="exportToExcel()">出力</button>
+
+    <h2>有休取得日-一覧</h2>
+    <label for="year">年度:</label>
+    <select id="year" name="year">
+        <!-- 年度選択肢 -->
+    </select>
+
+    <table id="vacationDetails">
+        <!-- 有休取得日一覧 -->
+    </table>
+
+<script>
+function goBack() {
+    // 戻るボタンの処理
+}
+
+function exportToExcel() {
+    // エクセル出力の処理
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+.toolTip {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+/* ホバーしたときにツールチップを表示 */
+.toolTipButton:hover+.toolTip {
+    display: block;
+}

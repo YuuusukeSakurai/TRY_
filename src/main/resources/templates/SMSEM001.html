@@ -1,0 +1,301 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href="@{..//css/bootstrap/bootstrap.min.css}" rel="stylesheet" type="text/css">
+    <link href="../css/SMSEM001.css" rel="stylesheet" type="text/css">
+    <link th:href="@{../css/index.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{../css/menu.css}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone"
+        rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../js/index.js"></script>
+    <script src="../js/SMSEM001.js"></script>
+    <style>
+        /* ステータスに応じた行の背景色 */
+        /* 初期状態のスタイル */
+        .initial-status {
+            background-color: white;
+            /* 初期状態の背景色を白に設定 */
+        }
+    </style>
+
+    <!-- 選択ダイアログ用css -->
+    <link th:href="@{../css/selectDialog.css}" rel="stylesheet" type="text/css">
+
+    <title>WHC:社員マスター一覧</title>
+</head>
+
+<body>
+    
+    <!-- 顧客選択ダイアログ -->
+    <section id="clientModal" class="modalArea clientModal">
+        <div id="modalBg" class="modalBg"></div>
+        <div class="modalWrapper">
+            <div class="modalContents">
+
+                <div class="card shadow bg-light top-margin10">
+                    <div class="card-body p-2" style="display: flex">
+                        <div class="input-group mb-2 mx-2 top-margin5">
+                            <span class="input-group-text">顧客番号</span>
+                            <input type="text" name="dialogClientId" class="form-control">
+                        </div>
+                        <div class="input-group mb-2 mx-2 top-margin5">
+                            <span class="input-group-text">顧客名</span>
+                            <input type="text" name="dialogClientName" class="form-control">
+                        </div>
+                        <div class="top-margin5">
+                            <button type="button" class="btn btn-def mb-1 mx-2">検索</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="top-margin10 listScroll">
+                    <table class="table table-sm table-striped table-bordered text-center mt-0">
+                        <thead>
+                            <tr bgcolor="royalblue" style="color: white">
+                                <th scope="col" style="width: 45px">顧客<br>番号</th>
+                                <th scope="col" style="width: 170px">顧客名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item:${client_list}">
+                                <td th:text="${item.client_id}"></td>
+                                <td th:text="${item.client_name}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-body ps-2 pt-0">
+                    <button type="button" id="selectClient" class="btn btn-def mb-1 mx-2 top-margin10">選択</button>
+                </div>
+
+            </div>
+            <div id="closeModal" class="closeModal">
+                ×
+            </div>
+        </div>
+    </section>
+    <!-- 顧客選択ダイアログここまで -->
+
+    <header>
+        <!--        ヘッダー部分は、Tymeleafで共通化すること-->
+        <nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: #f36304">
+            <a class="navbar-brand" href="ML010.html">
+                <span class="ml-1" style="color: white; font-size: 1.0em; font-weight: bold;">労働時間計算システム </span></a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto"></ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" style="color: white"> [Acount Name]
+                            <span class="visually-hidden">(current)</span></a>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"
+                            style="background-color: #f36304">
+                            <a class="dropdown-item" href="LF020.html" style="color: white">パスワード変更</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="LF010.html" style="color: white">ログアウト</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="d-flex flex-row" style="height: 1000px">
+        <div th:replace="~{menu::menu}"></div>
+
+        <main class="w-100 bg-light">
+            <div class="container bg-white border py-3 my-3">
+
+                <div class="card shadow bg-light">
+                    <h3 class="font-weight-bold p-2" id="folding">検索条件</h3>
+                    <div class="accordion">
+                        <div class="card-body p-2" style="display: flex">
+                            <div class="input-group mb-2 mx-2" style="width: 600px">
+                                <span class="input-group-text">社員番号</span> <input type="text" aria-label="emNo"
+                                    class="form-control" style="width: 150px">
+                                <span class="input-group-text">社員氏名</span> <input type="text" class="form-control"
+                                    style="width: 150px;">
+                            </div>
+                        </div>
+
+                        <div class="card-body p-2" style="display: flex">
+                            <div class="input-group mb-2 mx-2" style="width: 800px">
+                                <span class="input-group-text">担当顧客番号</span>
+                                <input type="text" aria-label="emNo" name="client_id" class="form-control" style="width: 150px"
+                                    id="customerNumberField">
+                                <span class="input-group-text">担当顧客名</span>
+                                <input type="text" class="form-control" name="client_name" style="width: 150px;" id="customerNameField">
+                                <button type="button" id="openClientModal"
+                                    class="btn btn-success border border-dark mb-2 mx-2"
+                                    style="color: white; background-color: cornflowerblue">顧客選択</button>
+                            </div>
+                        </div>
+                        <div class="card-body ps-2 pt-0" style="display: flex">
+                            <span class="input-group-text mb-3 mx-2">ステータス</span>
+                            <button type="button" id="toggleButton"
+                                style="border-radius: 40%; width: 20px; height: 20px; font-size: 10px;">i</button>
+                            <span class="input-group-text mb-3 mx-1">有給残日数なし</span>
+                            <input class="form-check-input mt-2 mx-3" type="checkbox" value=""
+                                aria-label="Checkbox for following text input">
+                            <span class="input-group-text mb-3 mx-1">有給取得日数不足(通知)</span>
+                            <input class="form-check-input mt-2 mx-3" type="checkbox" value=""
+                                aria-label="Checkbox for following text input">
+                            <span class="input-group-text mb-3 mx-1">有給取得日数不足(注意)</span>
+                            <input class="form-check-input mt-2 mx-3" type="checkbox" value=""
+                                aria-label="Checkbox for following text input">
+                            <span class="input-group-text mb-3 mx-1">有給取得日数不足(警告)</span>
+                            <input class="form-check-input mt-2 mx-3" type="checkbox" value=""
+                                aria-label="Checkbox for following text input">
+                        </div>
+                    </div>
+
+                    <div class="card-body p-2" style="display: flex">
+                        <button type="button" class="btn btn-success border border-dark mb-2 mx-2"
+                            style="color: white; background-color: cornflowerblue">検索</button>
+                    </div>
+                </div>
+
+
+                <!-- 登録、削除ボタン -->
+                <div class="card-body p-2" style="display: flex">
+                    <button type="button" class="btn btn-success border border-dark mb-2 mx-2"
+                        style="color: white; background-color: cornflowerblue;">新規登録</button>
+                    <button type="button" class="btn btn-success border border-dark mb-2 mx-2"
+                        style="color: white; background-color: cornflowerblue;">選択行削除</button>
+                    <button type="button" class="btn btn-success border border-dark mb-2 mx-2"
+                        style="color: white; background-color: cornflowerblue;">選択行帳票出力</button>
+                </div>
+
+                <!-- 一覧 -->
+                <div class="text-nowrap table-responsive" id="listLimit">
+                    <table class="table table-sm table-striped table-bordered my-3" style="width: 600px">
+                        <thead>
+                            <tr bgcolor="royalblue" class="text-center" style="color: white">
+                                <th scope="col" style="width: 40px">i</th>
+                                <th scope="col" style="width: 20px"><input type="checkbox"></th>
+                                <th scope="col" style="width: 45px">社員番号</th>
+                                <th scope="col" style="width: 100px">社員氏名</th>
+                                <th scope="col" style="width: 100px">担当顧客番号</th>
+                                <th scope="col" style="width: 100px">担当顧客名</th>
+                                <th scope="col" style="width: 45px">時給</th>
+                                <th scope="col" style="width: 170px">ステータス</th>
+                                <th scope="col" style="width: 100px">有給基準日</th>
+                                <th scope="col" style="width: 100px">有給残日数(当年度分)</th>
+                                <th scope="col" style="width: 100px">有給残日数(前年度分)</th>
+                                <th scope="col" style="width: 100px">有給取得日数</th>
+                                <th scope="col" style="width: 60px">有給詳細</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="col" style="width: 40px"> </th>
+                                <th scope="col" style="width: 20px"><input type="checkbox"></th>
+                                <th scope="col" style="width: 45px">0001</th>
+                                <th scope="col" style="width: 100px">ネクサス太郎</th>
+                                <th scope="col" style="width: 100px">001</th>
+                                <th scope="col" style="width: 100px">AAAAA</th>
+                                <th scope="col" style="width: 45px">-</th>
+                                <th scope="col" style="width: 170px">ステータス</th>
+                                <th scope="col" style="width: 100px">2023/10/01</th>
+                                <th scope="col" style="width: 100px">10.0</th>
+                                <th scope="col" style="width: 100px">10.0</th>
+                                <th scope="col" style="width: 100px">00.0</th>
+                                <th scope="col" style="width: 60px">開く</th>
+                            </tr>
+                            <tr>
+                                <th scope="col" style="width: 40px"> </th>
+                                <th scope="col" style="width: 20px"><input type="checkbox"></th>
+                                <th scope="col" style="width: 45px">0002</th>
+                                <th scope="col" style="width: 100px">ネクサス次郎</th>
+                                <th scope="col" style="width: 100px">002</th>
+                                <th scope="col" style="width: 100px">BBBBB</th>
+                                <th scope="col" style="width: 45px">-</th>
+                                <th scope="col" style="width: 170px">ステータス</th>
+                                <th scope="col" style="width: 100px">2023/11/01</th>
+                                <th scope="col" style="width: 100px">10.0</th>
+                                <th scope="col" style="width: 100px">10.0</th>
+                                <th scope="col" style="width: 100px">00.0</th>
+                                <th scope="col" style="width: 60px">開く</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ms-5">
+                    <a class="mx-3">←　前のページ</a>
+                    <a class="mx-1">1</a>
+                    <a class="mx-1">2</a>
+                    <a class="mx-1">3</a>
+                    <a class="mx-1">...</a>
+                    <a class="mx-1">10</a>
+                    <a class="mx-3">次のページ　→</a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButton = document.getElementById("toggleButton");
+
+            toggleButton.addEventListener("click", function () {
+                const rows = document.querySelectorAll("tr[data-status]");
+
+                // ボタンをクリックすると行の色を変更
+                rows.forEach(function (row) {
+                    const status = row.getAttribute("data-status");
+                    row.classList.remove("initial-status"); // 初期状態のクラスを削除
+
+                    if (status === "1") {
+                        row.style.backgroundColor = "yellow"; // ステータス1の場合
+                    } else if (status !== "5") {
+                        row.style.backgroundColor = "pink"; // ステータス5以外の場合
+                    }
+                });
+            });
+        });
+        // bootstrapのvalidation定義
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load',
+                function () {
+                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                    var forms = document
+                        .getElementsByClassName('needs-validation');
+                    // Loop over them and prevent submission
+                    var validation = Array.prototype.filter.call(forms,
+                        function (form) {
+                            form.addEventListener('submit', function (
+                                event) {
+                                if (form.checkValidity() === false) {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                }
+                                form.classList.add('was-validated');
+                            }, false);
+                        });
+                }, false);
+        })();
+    </script>
+
+    <!-- モーダルウィンドウ用js -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- 選択ダイアログ用js -->
+    <script src="../js/selectDialog.js"></script>
+
+    <script src="../js/menu.js"></script>
+    <script src="../js/SMSEM001.js"></script>
+    <script src="../js/jquery-3.5.1.min.js"></script>
+    <script src="../js/bootstrap/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

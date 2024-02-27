@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="../static/css/bootstrap/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="../static/css/index.css" rel="stylesheet" type="text/css">
+	<link th:href="@{../static/css/menu.css}" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+	<link
+		href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone"
+		rel="stylesheet">
+	<!-- 選択ダイアログ用css -->
+	<link th:href="@{../css/selectDialog.css}" rel="stylesheet" type="text/css">
+	<!-- ツールチップcss -->
+	<link th:href="@{../css/calendarStyle.css}" rel="stylesheet" type="text/css">
+
+	<title>WHC:カレンダーマスタ登録</title>
+
+</head>
+
+<body>
+
+
+	<!-- 顧客選択ダイアログ -->
+	<section id="clientModal" class="modalArea clientModal">
+		<div id="modalBg" class="modalBg"></div>
+		<div class="modalWrapper">
+			<div class="modalContents">
+
+				<div class="card shadow bg-light top-margin10">
+					<div class="card-body p-2" style="display: flex">
+						<div class="input-group mb-2 mx-2 top-margin5">
+							<span class="input-group-text">顧客番号</span>
+							<input type="text" name="dialogClientId" class="form-control">
+						</div>
+						<div class="input-group mb-2 mx-2 top-margin5">
+							<span class="input-group-text">顧客名</span>
+							<input type="text" name="dialogClientName" class="form-control">
+						</div>
+						<div class="top-margin5">
+							<button type="button" class="btn btn-def mb-1 mx-2">検索</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="top-margin10 listScroll">
+					<table class="table table-sm table-striped table-bordered text-center mt-0">
+						<thead>
+							<tr bgcolor="royalblue" style="color: white">
+								<th scope="col" style="width: 45px">顧客<br>番号</th>
+								<th scope="col" style="width: 170px">顧客名</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item:${client_list}">
+								<td th:text="${item.client_id}"></td>
+								<td th:text="${item.client_name}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="card-body ps-2 pt-0">
+					<button type="button" id="selectClient" class="btn btn-def mb-1 mx-2 top-margin10">選択</button>
+				</div>
+
+			</div>
+			<div id="closeModal" class="closeModal">
+				×
+			</div>
+		</div>
+	</section>
+	<!-- 顧客選択ダイアログここまで -->
+
+	<!-- 社員選択ダイアログ -->
+	<section id="employeeModal" class="modalArea employeeModal">
+		<div id="modalBg" class="modalBg"></div>
+		<div class="modalWrapper">
+			<div class="modalContents">
+
+				<div class="card shadow bg-light top-margin10">
+					<div class="card-body p-2" style="display: flex">
+						<div class="input-group mb-2 mx-2 top-margin5">
+							<span class="input-group-text">社員番号</span>
+							<input type="text" name="dialogEmployeeId" class="form-control">
+						</div>
+						<div class="input-group mb-2 mx-2 top-margin5">
+							<span class="input-group-text">社員名</span>
+							<input type="text" name="dialogEmployeeName" class="form-control">
+						</div>
+						<div class="top-margin5">
+							<button type="button" class="btn btn-def mb-1 mx-2">検索</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="top-margin10 listScroll">
+					<table class="table table-sm table-striped table-bordered text-center mt-0">
+						<thead>
+							<tr bgcolor="royalblue" style="color: white">
+								<th scope="col" style="width: 45px">社員<br>番号</th>
+								<th scope="col" style="width: 170px">社員名</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item:${employee_list}">
+								<td th:text="${item.employee_id}"></td>
+								<td th:text="${item.employee_name}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="card-body ps-2 pt-0">
+					<button type="button" id="selectEmployee" class="btn btn-def mb-1 mx-2 top-margin10">選択</button>
+				</div>
+
+			</div>
+			<div id="closeModal" class="closeModal">
+				×
+			</div>
+		</div>
+	</section>
+	<!-- 社員選択ダイアログここまで -->
+	<header>
+		<!--		ヘッダー部分は、Tymeleafで共通化すること-->
+		<nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: #f36304">
+			<a class="navbar-brand" href="ML010.html"> <span class="ml-1"
+					style="color: white; font-size: 1.0em; font-weight: bold;"> 労働時間計算システム </span> </a>
+
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto"></ul>
+				<ul class="navbar-nav">
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+							data-bs-toggle="dropdown" aria-expanded="false" style="color: white"> [Acount Name]
+							<span class="visually-hidden">(current)</span></a>
+						<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"
+							style="background-color: #f36304">
+							<a class="dropdown-item" href="LF020.html" style="color: white">パスワード変更</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="LF010.html" style="color: white">ログアウト</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+
+	<div class="d-flex flex-row" style="height: 1860px">
+
+		<object data="menu.html" type="text/html"></object>
+
+		<main class="w-100 h-100 bg-light">
+			<div class="container bg-white border py-3 my-3" style="width: 1000px">
+
+
+				<input type="hidden" name="seqId" th:value="${seqId}" />
+				<a id="backLink">
+					<button id="btn-back" type="button" class="btn btn-link py-0 my-2">＜＜戻る</button>
+				</a>
+
+				<div class="card-body p-0" style="display: flex">
+					<div class="input-group mb-3">
+						<span class="input-group-text">顧客名</span>
+						<input type="text" class="form-control" name="client_name"
+							th:value="${calendarData != null ? calendarData.client_name : ''}">
+					</div>
+					<div class="input-group mb-3" style="width: 350px">
+						<button type="button" class="btn btn-def border border-dark"  id="openClientModal" style="color: white">顧客選択</button>
+					</div>
+
+
+					<div class="input-group mb-3" style="width: 1000px">
+						<span class="input-group-text">社員番号</span>
+						<input type="text" id="employeeId" class="form-control" name="employee_id"
+							th:value="${calendarData != null ? calendarData.employee_id : ''}">
+						<span class="input-group-text">社員氏名</span>
+						<input type="text" id="employeeName" class="form-control" style="width: 100px"
+							name="employee_name" th:value="${calendarData != null ? calendarData.employee_name : ''}">
+					</div>
+					<div class="input-group mb-3" style="width: 350px">
+						<button type="button" class="btn btn-def border border-dark"  id="openEmployeeModal" style="color: white">社員選択</button>
+					</div>
+				</div>
+
+				<div class="card-body p-0" style="display: flex">
+
+					<div class="flatpickr input-group px-0 py-2 mb-3" data-id="strap" style="width: 420px">
+						<span class="input-group-text" style="width: 110px">暦通り入力</span>
+						<input id="inputDate" type="text" class="fromDays" placeholder="登録年月(From)" style="width: 120px"
+							data-input>
+						<a class="input-button" title="toggle" style="height: 38px" data-toggle>
+							<i class="material-icons">date_range</i>
+						</a>
+						<a class="input-button" title="clear" style="height: 38px" data-clear>
+							<i class="material-icons">clear</i>
+						</a>
+					</div>
+					<div class="flatpickr input-group ps-0 pb-2 py-2 mb-3" data-id="strap">
+						<span class="input-group-text" style="border-radius: 0rem">～</span>
+						<input id="inputDate" type="text" class="toDays" placeholder="登録年月(To)" style="width: 120px"
+							data-input>
+						<a class="input-button" title="toggle" style="height: 38px" data-toggle>
+							<i class="material-icons">date_range</i>
+						</a>
+						<a class="input-button" title="clear" style="height: 38px" data-clear>
+							<i class="material-icons">clear</i>
+						</a>
+
+						<button type="button" class="btn btn-def border border-dark ms-0"
+							style="color: white; width: 120px" id="formBtn">暦通り登録</button>
+					</div>
+
+
+				</div>
+
+				<table id="calHeader" class="table table-bordered">
+					<thead>
+						<tr bgcolor="lightgray" style="color: white">
+							<th>
+
+								<div style="display: inline-flex">
+									<input type="text" aria-label="dummy" class="form-control"
+										style="visibility: hidden; width: 390px">
+									<button type="button" class="btn btn-outline-secondary border border-dark"
+										th:onclick="|location.href='SMSCD002?calendarYear=__*{calendarYear}__&calendarMonth=__*{calendarMonth}__&pagestatus=1'|">＜</button>
+									<input type="text" aria-label="year" class="form-control position-relative"
+										style="width: 60px" name="year" th:value="${year}"
+										th:readonly="${mode =='view'}">
+									<input type="text" aria-label="month" class="form-control position-relative"
+										style="width: 45px" name="month" th:value="${month}"
+										th:readonly="${mode =='view'}">
+									<button type="button" class="btn btn-outline-secondary border border-dark"
+										th:onclick="|location.href='SMSCD002?calendarYear=__*{calendarYear}__&calendarMonth=__*{calendarMonth}__&pagestatus=2'|">＞</button>
+									<button type="button" class="btn btn-def border border-dark ms-5"
+										style="color: white" formaction="/calendar/SMSCD002"
+										onClick="return registEditCheck()">登録</button>
+									<button type="button" class="btn btn-def border border-dark ms-5"
+										style="color: white" onClick="return registEditCheck()">編集</button>
+									<button type="button" class="btn btn-def border border-dark ms-5"
+										style="color: white" onClick="isCheckDelete()">削除</button>
+								</div>
+							</th>
+						</tr>
+					</thead>
+				</table>
+
+
+
+				<table id="calender" class="table table-bordered">
+					<tbody id="calThead">
+						<th:block th:each="weekList : ${calendarList}">
+							<tr>
+								<th:block th:each="item : ${weekList}">
+									<!-- 背景色 -->
+									<td th:style="${item != null ? (#dates.dayOfWeek(item.date) == 1 ? 'background-color: pink;' : (#dates.dayOfWeek(item.date) == 7 ? 'background-color: lightskyblue;' : 'background-color: white')) : 'background-color: gray;'}"
+										th:with="dayOfWeek=${item != null ? #dates.dayOfWeek(item.date) : 0}">
+
+										<div th:if="${item != null}">
+											<!-- 日付の表示 -->
+											<label id="col7" style="width: 20px; font-size: 20px"
+												th:text="${item != null ? (#dates.format(item.date, 'd')) : ''}"></label>
+											<input type="hidden" name="day"
+												th:value="${item != null ? item.date : ''}" />
+											<!-- チェックボックスと休日ラベル -->
+											<div class="input-group-text"
+												style="width: 100px; background-color: transparent; border-color: transparent">
+												<div th:if="${mode =='view'}">
+													<input type="checkbox" aria-label="year"
+														class="form-check-input mt-0" name="holiday_flg"
+														th:checked="${item != null ? item.holiday_flg : false}"
+														onclick="return false;">
+													<label class="ms-2">休日</label>
+												</div>
+											</div>
+										</div>
+
+										<!-- コメントの表示 -->
+										<input type="text" aria-label="year" class="form-control toolTipButton"
+											th:style="${item != null && item.comment != null ? '' : 'visibility: hidden;'}"
+											name="comment" th:value="${item != null ? item.comment : ''}"
+											th:readonly="${mode =='view'}">
+										<!-- ツールチップ(マウスホバーでコメントの中身を表示) -->
+										<div type="text" class="toolTip"
+											th:if="${mode == view && item != null && item.comment != null && item.comment != ''}"
+											th:text="${item.comment}"></div>
+									</td>
+								</th:block>
+							</tr>
+						</th:block>
+
+
+					</tbody>
+				</table>
+
+				<div class="form-group mb-3">
+					<h5 class="font-weight-bold p-0">通年備考</h5>
+					<textarea class="form-control" rows="3" id="allYearRoundComment" name="allYearRoundComment"
+						th:text="${calendarData != null ? calendarData.comment : ''}"></textarea>
+				</div>
+
+
+			</div>
+		</main>
+	</div>
+
+	<script src="../static/js/jquery-3.5.1.min.js"></script>
+	<script src="../static/js/index.js"></script>
+	<script src="../static/js/menu.js"></script>
+	<script src="../static/js/bootstrap/bootstrap.bundle.min.js"></script>
+	<script src="../static/js/SMSTCD002.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/index.js"></script>
+	<!-- モーダルウィンドウ用js -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- 選択ダイアログ用js -->
+	<script src="../js/selectDialog.js"></script>
+
+	<script>
+		const config = {
+			wrap: true,
+			locale: 'ja',
+			plugins: [new monthSelectPlugin({
+				dateFormat: "Y/m"
+			})]
+		}
+		flatpickr('.flatpickr', config);
+	</script>
+
+</body>
+
+</html>
