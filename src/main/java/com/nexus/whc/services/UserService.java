@@ -19,4 +19,10 @@ public class UserService {
 		List<Map<String, Object>> allUserList = userRepository.allUserInfo();
 		return allUserList;
 	}
+
+	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
+	public List<Map<String, Object>> allUserSearch() {
+		List<Map<String, Object>> allUserSearchList = userRepository.allUserSearch();
+		return allUserSearchList;
+	}
 }
