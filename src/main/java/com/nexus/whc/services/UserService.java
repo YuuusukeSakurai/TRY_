@@ -16,19 +16,19 @@ public class UserService {
 
 	// ユーザマスタ情報を取得する(削除されていないユーザー)
 	public List<Map<String, Object>> allUserInfo() {
-		
+
 		List<Map<String, Object>> allUserList = userRepository.allUserInfo();
-		
+
 		return allUserList;
 	}
 
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
 	public List<Map<String, Object>> allUserSearch(int userId, String userName,
 			String authStatus, String mailAddress) {
-		
+
 		List<Map<String, Object>> allUserSearchList = userRepository.allUserSearch(userId, userName, authStatus,
 				mailAddress);
-		
+
 		return allUserSearchList;
 	}
 }
