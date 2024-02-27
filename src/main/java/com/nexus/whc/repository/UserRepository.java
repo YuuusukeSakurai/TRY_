@@ -1,4 +1,4 @@
-package com.nexus.whc.models;
+package com.nexus.whc.repository;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserDao {
+public class UserRepository {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
