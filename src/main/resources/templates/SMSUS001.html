@@ -105,19 +105,12 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
+							<tr th:each="user:${allUserList}">
 								<th class="text-center"><input type="checkbox"></th>
-								<th>nexus001</th>
-								<td><a href="SMSTCD00X5.html">ネクサス太郎</a></td>
-								<td class="text-center">管理者</td>
-								<th>t_nexus@nexus.com</th>
-							</tr>
-							<tr>
-								<th class="text-center"><input type="checkbox"></th>
-								<th>nexus002</th>
-								<td><a href="SMSTCD00X5.html">ネクサス次郎</a></td>
-								<td class="text-center">管理者</td>
-								<th>j_nexus@nexus.com</th>
+								<th th:text="${user.user_id}"></th>
+								<td th:text="${user.user_name}"></td>
+								<td th:text="${user.auth_status}"></td>
+								<td th:text="${user.mail_address}"></td>
 							</tr>
 						</tbody>
 					</table>
