@@ -31,7 +31,8 @@ public class UserRepository {
 	}
 
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
-	public List<Map<String, Object>> allUserSearch(int userId, String userName, String authStatus, String mailAddress) {
+	public List<Map<String, Object>> allUserSearch(int userId, String userName, 
+			String authStatus, String mailAddress) {
 
 		// SQL文の作成
 		String sql = "SELECT * FROM m_user \n"
@@ -43,6 +44,7 @@ public class UserRepository {
 				+ "OR m_authority.auth_status = ? \n"
 				+ "OR mail_address = ? \n"
 				+ "ORDER BY user_id ASC";
+		
 		// ？の箇所を置換するデータの配列を定義
 		Object[] param = { userId, userName, authStatus, mailAddress };
 		
