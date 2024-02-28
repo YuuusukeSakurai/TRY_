@@ -23,7 +23,7 @@ public class UserService {
 	}
 
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
-	public List<Map<String, Object>> allUserSearch(int userId, String userName,
+	public List<Map<String, Object>> allUserSearch(String userId, String userName,
 			String authStatus, String mailAddress) {
 
 		List<Map<String, Object>> allUserSearchList = userRepository.allUserSearch(userId, userName, authStatus,
