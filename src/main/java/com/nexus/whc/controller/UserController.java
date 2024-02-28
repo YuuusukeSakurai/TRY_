@@ -82,4 +82,10 @@ public class UserController {
 		return "SMSUS001";
 
 	}
+	// ユーザーマスタ登録
+	@GetMapping("/regist")
+	public String userRegist() {
+		// ユーザマスタ登録画面に遷移
+		return "SMSUS002";
+	}
 }
