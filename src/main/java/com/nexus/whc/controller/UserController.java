@@ -51,7 +51,6 @@ public class UserController {
 	}
 
 	// ユーザ検索
-	/*	@RequestMapping("/list")*/
 	@PostMapping("/list")
 	public String allUserSearch(@RequestParam(name = "userId", defaultValue = "") String userId,
 			@RequestParam(name = "userName", defaultValue = "") String userName,
@@ -82,10 +81,27 @@ public class UserController {
 		return "SMSUS001";
 
 	}
-	// ユーザーマスタ登録
+
+	// ユーザーマスタ登録画面（SMSUS002）表示
 	@GetMapping("/regist")
-	public String userRegist() {
+	public String userRegist(@RequestParam(name = "seq_id") String seqId,
+			Model model) {
+		// リクエストスコープにシークエンスIDを保存
+		model.addAttribute("seq_id", seqId);
 		// ユーザマスタ登録画面に遷移
 		return "SMSUS002";
+	}
+
+	// ユーザーマスタ登録画面（SMSUS002）から登録処理
+	@PostMapping("/regist")
+	public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
+			@RequestParam(name = "userName", defaultValue = "") String userName,
+			@RequestParam(name = "permission", defaultValue = "") String authStatus,
+			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model) {
+		System.out.println(userId);
+		System.out.println(userName);
+		System.out.println(authStatus);
+		System.out.println(mailAddress);
+		return "redirect:/user/list";
 	}
 }
