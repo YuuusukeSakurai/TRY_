@@ -98,10 +98,13 @@ public class UserController {
 			@RequestParam(name = "userName", defaultValue = "") String userName,
 			@RequestParam(name = "permission", defaultValue = "") String authStatus,
 			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model) {
-		System.out.println(userId);
-		System.out.println(userName);
-		System.out.println(authStatus);
-		System.out.println(mailAddress);
+
+		// リクエストスコープに検索条件を保存
+		model.addAttribute("userId", userId);
+		model.addAttribute("userName", userName);
+		model.addAttribute("permission", authStatus);
+		model.addAttribute("mailAddress", mailAddress);
+		
 		return "redirect:/user/list";
 	}
 }
