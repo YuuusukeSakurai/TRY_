@@ -9,10 +9,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.nexus.whc.Form.UserForm;
 import com.nexus.whc.services.UserService;
 
 /*
@@ -94,10 +96,22 @@ public class UserController {
 
 	// ユーザーマスタ登録画面（SMSUS002）から登録処理
 	@PostMapping("/regist")
-	public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
-			@RequestParam(name = "userName", defaultValue = "") String userName,
-			@RequestParam(name = "permission", defaultValue = "") String authStatus,
-			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model) {
+	public String userRegist(@ModelAttribute UserForm userForm, Model model) {
+		/*		public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
+						@RequestParam(name = "userName", defaultValue = "") String userName,
+						@RequestParam(name = "permission", defaultValue = "") String authStatus,
+						@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model) {
+		*/
+		// Formオブジェクトから各項目を取得
+		String userId = userForm.getUserId();
+		String userName = userForm.getUserName();
+		String authStatus = userForm.getPermission();
+		String mailAddress = userForm.getMailAddress();
+
+		System.out.println(userId);
+		System.out.println(userName);
+		System.out.println(authStatus);
+		System.out.println(mailAddress);
 
 		// リクエストスコープに検索条件を保存
 		model.addAttribute("userId", userId);
