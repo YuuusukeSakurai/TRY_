@@ -104,7 +104,10 @@ public class UserController {
 		model.addAttribute("userName", userName);
 		model.addAttribute("permission", authStatus);
 		model.addAttribute("mailAddress", mailAddress);
-		
+
+		// ユーザマスタに新規登録
+		int result = userService.userRegist(userId, userName, authStatus, mailAddress);
+		System.out.println("登録件数:" + result);
 		return "redirect:/user/list";
 	}
 }

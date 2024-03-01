@@ -83,4 +83,28 @@ public class UserRepository {
 		return allUserSearchList;
 	}
 
+	// ユーザマスタへの新規登録
+	public int userRegist(String userId, String userName, String authStatus, String mailAddress) {
+
+		// SQL文の作成
+		String sql = "INSERT INTO m_user (user_id, user_name, PASSWORD, auth_id, mail_address, delete_flg) \n"
+				+ "VALUES(? , ?,\"77rgzxvbulow9yvlttyvng7zbq9ydtlndpkj2jg05r64iiyned7nnwdcl9hqpn76\","
+				+ " ?, ?, 0)";
+		// 権限が選択されている場合
+		if (authStatus.equals("admin")) {
+			authStatus = "0";
+		} else if (authStatus.equals("user")) {
+			authStatus = "1";
+		}
+
+		// ？の箇所を置換するデータの配列を定義
+		Object[] param = { userId, userName, authStatus, mailAddress };
+
+		// クエリを実行
+		int result = jdbcTemplate.update(sql, param);
+
+		// 実行件数を返す
+		return result;
+
+	}
 }

@@ -31,4 +31,11 @@ public class UserService {
 
 		return allUserSearchList;
 	}
+
+	// ユーザマスタへの新規登録
+	public int userRegist(String userId, String userName, String authStatus, String mailAddress) {
+		int result = userRepository.userRegist(userId, userName, authStatus, mailAddress);
+		return result;
+
+	}
 }
