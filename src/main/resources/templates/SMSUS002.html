@@ -62,24 +62,33 @@
 
 		<main class="w-100 h-100 bg-light">
 			<div class="container bg-white border py-3 my-3" style="width: 850px">
-				<form method="post" action="/user/regist">
+				<div th:text="${message}" style="color: red;"></div>
+				<form method="post" action="/user/regist" th:object="${userForm}">
+				<div th:errors="*{userId}"></div>
+				<div th:errors="*{userName}"></div>
+				<div th:errors="*{mailAddress}"></div>
 					<div class="input-group mb-3" style="width: 600px">
 						<span class="input-group-text">ユーザID</span> 
-						<input type="text"aria-label="emNo" name="userId" th:value="${userId}" class="form-control" style="width: 150px">
-						<span class="input-group-text">ユーザ名</span> 
+						<input type="text" aria-label="emNo" name="userId" th:value="${userId}" class="form-control" style="width: 150px">
+						<!-- <input type="text" aria-label="emNo" name="userId" th:value="*{userId}" class="form-control" style="width: 150px"> -->
+						<span class="input-group-text">ユーザ名</span>
 						<input type="text" name="userName" th:value="${userName}" class="form-control" style="width: 150px">
+						<!-- <input type="text" name="userName" th:value="*{userName}" class="form-control" style="width: 150px"> -->
 					</div>
 
 					<div class="input-group mb-3" style="width: 300px">
-						<span class="input-group-text">権限</span> <select name="permission"
-							id="permission-select">
-							<option value="admin" th:selected="${permission == 'all'}">管理者</option>
-							<option value="user" th:selected="${permission == 'admin'}">一般</option>
+						<span class="input-group-text">権限</span> 
+						<select name="permission"id="permission-select">
+							<option value="admin" th:selected="${permission == 'admin'}">管理者</option>
+							<!-- <option value="admin" th:selected="*{permission == 'admin'}">管理者</option> -->
+							<option value="user" th:selected="${permission == 'user'}">一般</option>
+							<!-- <option value="user" th:selected="*{permission == 'user'}">一般</option> -->
 						</select>
 					</div>
 
 					<div class="input-group mb-3" style="width: 500px">
-						<span class="input-group-text">メールアドレス</span>
+						<span class="input-group-text">メールアドレス</span> 
+						<!-- <input type="text" name="mailAddress" th:value="*{mailAddress}" aria-label="emNo" class="form-control" style="width: 150px"> -->
 						<input type="text" name="mailAddress" th:value="${mailAddress}" aria-label="emNo" class="form-control" style="width: 150px">
 					</div>
 
