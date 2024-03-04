@@ -1,5 +1,6 @@
 package com.nexus.whc.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -133,4 +134,27 @@ public class UserController {
 		System.out.println("登録件数:" + result);
 		return "redirect:/user/list";
 	}
+
+	/*ユーザマスタ一覧(SMSUS001)から選択行削除*/
+	@PostMapping("/delete")
+	public String userDelete(
+			@RequestParam(name = "deleteCheck[]", required = false, defaultValue = "") String[] seqId,
+			RedirectAttributes attr) {
+		System.out.println("選択行削除処理の開始");
+		System.out.println(Arrays.toString(seqId));
+
+		if (seqId.length == 0) {
+			String errorMessage = messageSource.getMessage("COM01W003", new String[] {},
+					Locale.getDefault());
+			// リクエストスコープにエラーメッセージを保存
+			attr.addFlashAttribute("message", errorMessage);
+			return "redirect:/user/list";
+		}
+		// ユーザマスタから選択行削除
+		int result = userService.userDelete(seqId);
+		System.out.println("削除件数:" + result);
+		// ダイアログで「OK」が押された後、ユーザマスタ一覧(SMSUS001)にリダイレクト
+		return "redirect:/user/list";
+	}
+
 }

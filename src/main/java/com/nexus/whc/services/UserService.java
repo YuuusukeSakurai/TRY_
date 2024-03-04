@@ -38,4 +38,10 @@ public class UserService {
 		return result;
 
 	}
+
+	// ユーザマスタから選択行削除
+	public int userDelete(String[] seqId) {
+		int result = userRepository.userDelete(seqId);
+		return result;
+	}
 }

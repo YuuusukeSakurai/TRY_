@@ -18,10 +18,16 @@ public class UserRepository {
 	public List<Map<String, Object>> allUserInfo() {
 
 		// SQL文の作成
-		String sql = "SELECT * FROM m_user \n"
-				+ "INNER JOIN m_authority\n"
-				+ "ON m_user.auth_id = m_authority.auth_id\n"
-				+ "WHERE delete_flg = 0 \n"
+		String sql = "SELECT "
+				+ "m_user.seq_id, "
+				+ "m_user.user_id, "
+				+ "m_user.user_name, "
+				+ "m_user.auth_id, "
+				+ "m_user.mail_address, "
+				+ "m_authority.auth_status "
+				+ "FROM m_user "
+				+ "LEFT JOIN m_authority ON m_user.auth_id = m_authority.auth_id "
+				+ "WHERE delete_flg = 0 "
 				+ "ORDER BY user_id ASC";
 
 		// クエリを実行
@@ -106,5 +112,26 @@ public class UserRepository {
 		// 実行件数を返す
 		return result;
 
+	}
+
+	// ユーザマスタから選択行削除
+	public int userDelete(String[] seqId) {
+		// 削除した件数
+		int result = 0;
+
+		for (String seq_id : seqId) {
+			// SQL文の作成
+			String sql = "UPDATE m_user "
+					+ "SET delete_flg = 1 "
+					+ "WHERE seq_id = ?";
+
+			// ?の箇所を置換するデータの配列を定義する
+			Object[] param = { seq_id };
+
+			// クエリを実行
+			result += jdbcTemplate.update(sql, param);
+		}
+		// 実行件数を返す
+		return result;
 	}
 }

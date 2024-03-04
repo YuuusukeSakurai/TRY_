@@ -15,6 +15,7 @@
 		rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="../js/index.js"></script>
+	<script src="../js/SMSUS001.js"></script>
 	<title>WHC:ユーザーマスタ一覧</title>
 </head>
 
@@ -56,10 +57,12 @@
 					<form method="post" action="/user/list">
 						<div class="card-body p-2" style="display: flex">
 							<div class="input-group mb-2 mx-2" style="width: 600px">
-								<span class="input-group-text">ユーザID</span> <input type="text" name="userId"
-									th:value="${userId}" aria-label="emNo" class="form-control" style="width: 150px">
-								<span class="input-group-text">ユーザ名</span> <input type="text" name="userName"
-									th:value="${userName}" class="form-control" style="width: 150px;">
+								<span class="input-group-text">ユーザID</span>
+								<input type="text" name="userId" th:value="${userId}" aria-label="emNo"
+									class="form-control" style="width: 150px">
+								<span class="input-group-text">ユーザ名</span>
+								<input type="text" name="userName" th:value="${userName}" class="form-control"
+									style="width: 150px;">
 							</div>
 						</div>
 
@@ -78,9 +81,9 @@
 
 						<div class=" card-body p-2" style="display: flex">
 							<div class="input-group mb-2 mx-2" style="width: 500px">
-								<span class="input-group-text">メールアドレス</span> <input type="text" name="mailAddress"
-									th:value="${mailAddress}" aria-label="emNo" class="form-control"
-									style="width: 150px">
+								<span class="input-group-text">メールアドレス</span>
+								<input type="text" name="mailAddress" th:value="${mailAddress}" aria-label="emNo"
+									class="form-control" style="width: 150px">
 							</div>
 						</div>
 
@@ -88,87 +91,62 @@
 							<button type="submit" class="btn btn-success border border-dark mb-2 mx-2"
 								style="color: white; background-color: cornflowerblue">検索</button>
 						</div>
+					</form>
 				</div>
+				<form method="post" action="/user/delete">
+					<div class="card-body p-2" style="display: flex">
+						<button type="button" onclick="location.href='/user/regist?seq_id=0'"
+							class="btn btn-success border border-dark mb-2 mx-2"
+							style="color: white; background-color: cornflowerblue;">新規登録</button>
+						<button type="button" id="delete" class="btn btn-success border border-dark mb-2 mx-2"
+							style="color: white; background-color: cornflowerblue;">選択行削除</button>
+					</div>
 
-				<div class="card-body p-2" style="display: flex">
-					<button type="button" onclick="location.href='/user/regist?seq_id=0'" class="btn btn-success border border-dark mb-2 mx-2"
-						style="color: white; background-color: cornflowerblue;">新規登録</button>
-					<button type="button" class="btn btn-success border border-dark mb-2 mx-2"
-						style="color: white; background-color: cornflowerblue;">選択行削除</button>
-				</div>
+					<div class="text-nowrap table-responsive">
+						<table class="table table-sm table-striped table-bordered my-3" style="width: 600px">
+							<thead>
+								<tr bgcolor="royalblue" class="text-center" style="color: white">
+									<th scope="col" style="width: 20px"><input type="checkbox"></th>
+									<th scope="col" style="width: 45px">ユーザID</th>
+									<th scope="col" style="width: 120px">ユーザ名</th>
+									<th scope="col" style="width: 45px">権限</th>
+									<th scope="col" style="width: 200px">メールアドレス</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="user:${allUserList}">
+									<th class="text-center"><input type="checkbox" name="deleteCheck[]"
+											th:value="${user.seq_id}"></th>
+									<th th:text="${user.user_id}"></th>
+									<td th:text="${user.user_name}"></td>
+									<td th:text="${user.auth_status}"></td>
+									<td th:text="${user.mail_address}"></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</form>
 
-				<div class="text-nowrap table-responsive">
-					<table class="table table-sm table-striped table-bordered my-3" style="width: 600px">
-						<thead>
-							<tr bgcolor="royalblue" class="text-center" style="color: white">
-								<th scope="col" style="width: 20px"><input type="checkbox"></th>
-								<th scope="col" style="width: 45px">ユーザID</th>
-								<th scope="col" style="width: 120px">ユーザ名</th>
-								<th scope="col" style="width: 45px">権限</th>
-								<th scope="col" style="width: 200px">メールアドレス</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="user:${allUserList}">
-								<th class="text-center"><input type="checkbox"></th>
-								<th th:text="${user.user_id}"></th>
-								<td th:text="${user.user_name}"></td>
-								<td th:text="${user.auth_status}"></td>
-								<td th:text="${user.mail_address}"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+
 				<div class="ms-5">
-					<a class="mx-3">← 前のページ</a> <a class="mx-1">1</a> <a class="mx-1">2</a>
-					<a class="mx-1">3</a> <a class="mx-1">...</a> <a class="mx-1">10</a>
+					<a class="mx-3">← 前のページ</a>
+					<a class="mx-1">1</a>
+					<a class="mx-1">2</a>
+					<a class="mx-1">3</a>
+					<a class="mx-1">...</a>
+					<a class="mx-1">10</a>
 					<a class="mx-3">次のページ →</a>
 				</div>
 			</div>
 
 		</main>
 	</div>
-	<script>
-		// Example starter JavaScript for disabling form submissions if there are invalid fields
-		(function () {
-			'use strict';
-			window.addEventListener('load',
-				function () {
-					// Fetch all the forms we want to apply custom Bootstrap validation styles to
-					var forms = document
-						.getElementsByClassName('needs-validation');
-					// Loop over them and prevent submission
-					var validation = Array.prototype.filter.call(forms,
-						function (form) {
-							form.addEventListener('submit', function (
-								event) {
-								if (form.checkValidity() === false) {
-									event.preventDefault();
-									event.stopPropagation();
-								}
-								form.classList.add('was-validated');
-							}, false);
-						});
-				}, false);
-		})();
-	</script>
 	<script src="../js/menu.js"></script>
 	<script src="../js/jquery-3.5.1.min.js"></script>
 	<script src="../js/bootstrap/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
 		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
 		crossorigin="anonymous"></script>
-	<script>
-		const config = {
-			wrap: true,
-			locale: 'ja',
-			plugins: [new monthSelectPlugin({
-				dateFormat: "Y/m"
-			})]
-		}
-		flatpickr('.flatpickr', config);
-	</script>
 </body>
 
 </html>
