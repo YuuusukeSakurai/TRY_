@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.nexus.whc.Form.UserForm;
 import com.nexus.whc.services.UserService;
@@ -86,7 +87,10 @@ public class UserController {
 
 	// ユーザーマスタ登録画面（SMSUS002）表示
 	@GetMapping("/regist")
-	public String userRegist(@RequestParam(name = "seq_id") String seqId,
+	/*	public String userRegist(@RequestParam(name = "seq_id") String seqId,
+				Model model) {*/
+	public String userRegist(@ModelAttribute UserForm userForm,
+			@RequestParam(name = "seq_id") String seqId,
 			Model model) {
 		// リクエストスコープにシークエンスIDを保存
 		model.addAttribute("seq_id", seqId);
@@ -96,28 +100,33 @@ public class UserController {
 
 	// ユーザーマスタ登録画面（SMSUS002）から登録処理
 	@PostMapping("/regist")
-	public String userRegist(@ModelAttribute UserForm userForm, Model model) {
-		/*		public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
-						@RequestParam(name = "userName", defaultValue = "") String userName,
-						@RequestParam(name = "permission", defaultValue = "") String authStatus,
-						@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model) {
-		*/
-		// Formオブジェクトから各項目を取得
-		String userId = userForm.getUserId();
-		String userName = userForm.getUserName();
-		String authStatus = userForm.getPermission();
-		String mailAddress = userForm.getMailAddress();
+	public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
+			@RequestParam(name = "userName", defaultValue = "") String userName,
+			@RequestParam(name = "permission", defaultValue = "") String authStatus,
+			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model,
+			RedirectAttributes attr) {
 
-		System.out.println(userId);
-		System.out.println(userName);
-		System.out.println(authStatus);
-		System.out.println(mailAddress);
-
-		// リクエストスコープに検索条件を保存
-		model.addAttribute("userId", userId);
-		model.addAttribute("userName", userName);
-		model.addAttribute("permission", authStatus);
-		model.addAttribute("mailAddress", mailAddress);
+		// エラーメッセージ
+		String error = "";
+		attr.addFlashAttribute("userId", userId);
+		attr.addFlashAttribute("userName", userName);
+		attr.addFlashAttribute("permission", authStatus);
+		attr.addFlashAttribute("mailAddress", mailAddress);
+		// 未入力項目がある場合
+		if (userId.isEmpty()) {
+			error += " ユーザID";
+		}
+		if (userName.isEmpty()) {
+			error += " ユーザ名";
+		}
+		if (mailAddress.isEmpty()) {
+			error += " メールアドレス";
+		}
+		
+		if (!error.isEmpty()) {
+			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
+			return "redirect:/user/regist?seq_id=0";
+		}
 
 		// ユーザマスタに新規登録
 		int result = userService.userRegist(userId, userName, authStatus, mailAddress);
