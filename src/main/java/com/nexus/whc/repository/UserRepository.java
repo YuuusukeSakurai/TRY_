@@ -114,27 +114,6 @@ public class UserRepository {
 
 	}
 
-	// ユーザマスタから選択行削除
-	public int userDelete(String[] seqId) {
-		// 削除した件数
-		int result = 0;
-
-		for (String seq_id : seqId) {
-			// SQL文の作成
-			String sql = "UPDATE m_user "
-					+ "SET delete_flg = 1 "
-					+ "WHERE seq_id = ?";
-
-			// ?の箇所を置換するデータの配列を定義する
-			Object[] param = { seq_id };
-
-			// クエリを実行
-			result += jdbcTemplate.update(sql, param);
-		}
-		// 実行件数を返す
-		return result;
-	}
-
 	// データ存在確認(排他チェック（削除）)
 	public List<Map<String, Object>> dataExistCheck(String[] seqId) {
 
@@ -202,6 +181,27 @@ public class UserRepository {
 			System.out.println("登録するシークエンスID:" + list.get("seq_id"));
 			System.out.println("登録するユーザID:" + list.get("user_id"));
 			Object[] param = { "m_user", list.get("seq_id"), list.get("user_id") };
+
+			// クエリを実行
+			result = jdbcTemplate.update(sql, param);
+		}
+		// 実行件数を返す
+		return result;
+	}
+
+	// ユーザマスタから選択行削除
+	public int userDelete(List<Map<String, Object>> dataExists) {
+		// 削除した件数
+		int result = 0;
+
+		for (Map<String, Object> list : dataExists) {
+			// SQL文の作成
+			String sql = "UPDATE m_user "
+					+ "SET delete_flg = 1 "
+					+ "WHERE seq_id = ?";
+
+			// ?の箇所を置換するデータの配列を定義する
+			Object[] param = { list.get("seq_id") };
 
 			// クエリを実行
 			result = jdbcTemplate.update(sql, param);

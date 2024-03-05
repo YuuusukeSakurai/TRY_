@@ -40,8 +40,8 @@ public class UserService {
 	}
 
 	// ユーザマスタから選択行削除
-	public int userDelete(String[] seqId) {
-		int result = userRepository.userDelete(seqId);
+	public int userDelete(List<Map<String, Object>> exclusiveDataCheckList) {
+		int result = userRepository.userDelete(exclusiveDataCheckList);
 		return result;
 	}
 
@@ -59,8 +59,8 @@ public class UserService {
 	}
 
 	// ロックテーブルに編集するレコードを登録する。
-	public int registLockTable(List<Map<String, Object>> exclusiveDataCheckList) {
-		int result = userRepository.registLockTable(exclusiveDataCheckList);
+	public int registLockTable(List<Map<String, Object>> dataExists) {
+		int result = userRepository.registLockTable(dataExists);
 		return result;
 	}
 }

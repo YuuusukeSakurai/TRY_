@@ -177,7 +177,7 @@ public class UserController {
 		List<Map<String, Object>> exclusiveDataCheckList = userService.editLockCheckList(dataExists);
 		/*System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList.size());*/
 		System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList);
-		// 他のユーザーが編集の場合
+		// 他のユーザーが編集の場合（レコードが、ロックテーブルに登録されている場合）
 		if (!exclusiveDataCheckList.isEmpty()) {
 			/*if (exclusiveDataCheckList.isEmpty()) {*/
 			// TODO ユーザー情報の特定
@@ -197,7 +197,7 @@ public class UserController {
 		System.out.println("登録件数は:" + registLockData + "件です。");
 
 		// ユーザマスタから選択行削除
-		int result = userService.userDelete(seqId);
+		int result = userService.userDelete(dataExists);
 		System.out.println("削除件数:" + result);
 
 		// ダイアログで「OK」が押された後、ユーザマスタ一覧(SMSUS001)にリダイレクト
