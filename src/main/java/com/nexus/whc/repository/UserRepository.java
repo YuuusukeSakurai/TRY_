@@ -181,13 +181,33 @@ public class UserRepository {
 			// クエリを実行
 			result = jdbcTemplate.queryForList(sql, param);
 
-			// 結果が存在すればリストに追加
-			if (!dataExistList.isEmpty()) {
-				result.addAll(dataExistList);
-			}
 		}
 		// 実行結果のリストを返す
 		return result;
 
 	}
+
+	// ロックテーブルに編集するレコードを登録する。
+	public int registLockTable(List<Map<String, Object>> exclusiveDataCheckList) {
+		// 登録した件数
+		int result = 0;
+
+		// SQL文の作成
+		String sql = "INSERT INTO s_lock(locking_table_name,locking_record_id,locking_user_id) \n"
+				+ "VALUES (?,?,?)";
+		// 登録するデータ分実行する
+		for (Map<String, Object> list : exclusiveDataCheckList) {
+
+			// ?の箇所を置換するデータの配列を定義する
+			System.out.println("登録するシークエンスID:" + list.get("seq_id"));
+			System.out.println("登録するユーザID:" + list.get("user_id"));
+			Object[] param = { "m_user", list.get("seq_id"), list.get("user_id") };
+
+			// クエリを実行
+			result = jdbcTemplate.update(sql, param);
+		}
+		// 実行件数を返す
+		return result;
+	}
+
 }

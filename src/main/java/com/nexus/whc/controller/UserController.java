@@ -175,9 +175,11 @@ public class UserController {
 
 		// 排他チェック（編集ロック確認）
 		List<Map<String, Object>> exclusiveDataCheckList = userService.editLockCheckList(dataExists);
-		System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList.size());
+		/*System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList.size());*/
+		System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList);
 		// 他のユーザーが編集の場合
 		if (!exclusiveDataCheckList.isEmpty()) {
+			/*if (exclusiveDataCheckList.isEmpty()) {*/
 			// TODO ユーザー情報の特定
 			/*			List<Map<String, Object>> editUserInfo = userService
 								.allUserSearch(exclusiveDataCheckList.get(0).get("user_id").toString(), "", "", "");
@@ -190,6 +192,9 @@ public class UserController {
 			// ユーザマスタ一覧(SMSUS001)にリダイレクト
 			return "redirect:/user/list";
 		}
+		// 排他チェック（編集ロック登録）
+		int registLockData = userService.registLockTable(dataExists);
+		System.out.println("登録件数は:" + registLockData + "件です。");
 
 		// ユーザマスタから選択行削除
 		int result = userService.userDelete(seqId);

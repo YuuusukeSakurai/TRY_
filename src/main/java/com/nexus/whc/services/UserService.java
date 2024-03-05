@@ -57,4 +57,10 @@ public class UserService {
 		List<Map<String, Object>> result = userRepository.editLockCheck(dataExistList);
 		return result;
 	}
+
+	// ロックテーブルに編集するレコードを登録する。
+	public int registLockTable(List<Map<String, Object>> exclusiveDataCheckList) {
+		int result = userRepository.registLockTable(exclusiveDataCheckList);
+		return result;
+	}
 }
