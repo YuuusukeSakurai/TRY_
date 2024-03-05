@@ -134,4 +134,31 @@ public class UserRepository {
 		// 実行件数を返す
 		return result;
 	}
+	// データ存在確認(排他チェック（削除）)
+	public List<Map<String, Object>> dataExistCheck(String[] seqId) {
+
+		// 削除されていないデータを格納する
+		List<Map<String, Object>> result = new ArrayList<>();
+
+		// SQL文の作成
+		String sql = "SELECT m_user.seq_id FROM m_user WHERE seq_id = ? AND delete_flg = 0";
+
+		// 選択されたシーケンスID分データが存在するか確認する
+		for (String seq_id : seqId) {
+
+			// ?の箇所を置換するデータの配列を定義する
+			Object[] param = { seq_id };
+
+			// クエリを実行
+			List<Map<String, Object>> dataExistList = jdbcTemplate.queryForList(sql, param);
+
+			// 結果が存在すればリストに追加
+			if (!dataExistList.isEmpty()) {
+				result.addAll(dataExistList);
+			}
+		}
+
+		// 実行結果のリストを返す
+		return result;
+	}
 }

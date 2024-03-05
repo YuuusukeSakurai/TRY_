@@ -123,7 +123,7 @@ public class UserController {
 		if (mailAddress.isEmpty()) {
 			error += " メールアドレス";
 		}
-		
+
 		if (!error.isEmpty()) {
 			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
 			return "redirect:/user/regist?seq_id=0";
@@ -141,18 +141,34 @@ public class UserController {
 			@RequestParam(name = "deleteCheck[]", required = false, defaultValue = "") String[] seqId,
 			RedirectAttributes attr) {
 		System.out.println("選択行削除処理の開始");
+
+		// エラーメッセージ
+		String errorMessage = "";
 		System.out.println(Arrays.toString(seqId));
 
 		if (seqId.length == 0) {
-			String errorMessage = messageSource.getMessage("COM01W003", new String[] {},
+			errorMessage = messageSource.getMessage("COM01W003", new String[] {},
 					Locale.getDefault());
 			// リクエストスコープにエラーメッセージを保存
 			attr.addFlashAttribute("message", errorMessage);
 			return "redirect:/user/list";
 		}
+		// 排他チェック（削除）
+		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqId);
+		if (dataExists.isEmpty()) {
+			errorMessage = messageSource.getMessage("COM01E005", new String[] {},
+					Locale.getDefault());
+			// リクエストスコープにエラーメッセージを保存
+			attr.addFlashAttribute("message", errorMessage);
+			// ユーザマスタ一覧(SMSUS001)にリダイレクト
+			return "redirect:/user/list";
+		}
+		System.out.println(dataExists);
+		
 		// ユーザマスタから選択行削除
 		int result = userService.userDelete(seqId);
 		System.out.println("削除件数:" + result);
+
 		// ダイアログで「OK」が押された後、ユーザマスタ一覧(SMSUS001)にリダイレクト
 		return "redirect:/user/list";
 	}

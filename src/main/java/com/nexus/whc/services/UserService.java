@@ -44,4 +44,11 @@ public class UserService {
 		int result = userRepository.userDelete(seqId);
 		return result;
 	}
+
+	// データ存在確認(排他チェック（削除）)
+	public List<Map<String, Object>> dataExistCheck(String[] seqId) {
+		List<Map<String, Object>> result = userRepository.dataExistCheck(seqId);
+		return result;
+
+	}
 }
