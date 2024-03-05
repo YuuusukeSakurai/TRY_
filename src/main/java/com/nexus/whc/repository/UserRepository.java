@@ -134,6 +134,7 @@ public class UserRepository {
 		// 実行件数を返す
 		return result;
 	}
+
 	// データ存在確認(排他チェック（削除）)
 	public List<Map<String, Object>> dataExistCheck(String[] seqId) {
 
@@ -141,7 +142,7 @@ public class UserRepository {
 		List<Map<String, Object>> result = new ArrayList<>();
 
 		// SQL文の作成
-		String sql = "SELECT m_user.seq_id FROM m_user WHERE seq_id = ? AND delete_flg = 0";
+		String sql = "SELECT m_user.seq_id, m_user.user_id  FROM m_user WHERE seq_id = ? AND delete_flg = 0";
 
 		// 選択されたシーケンスID分データが存在するか確認する
 		for (String seq_id : seqId) {
@@ -157,8 +158,20 @@ public class UserRepository {
 				result.addAll(dataExistList);
 			}
 		}
-
 		// 実行結果のリストを返す
 		return result;
 	}
+
+	/*	// 編集中かどうかロックテーブルを確認する
+		public List<Map<String, Object>> editLockCheck(List<E>) {
+			// ロックテーブルに登録されていないデータを登録する
+			List<Map<String, Object>> result = new ArrayList<>();
+			
+			// SQL文の作成
+			String sql = "SELECT * FROM s_lock"
+			           + "WHERE s_lock.locking_table_name = 'm_user' "
+			           + "  AND s_lock.locking_record_id = ?"
+			           + "  AND s_lock.locking_user_id = ?";
+	
+		}*/
 }
