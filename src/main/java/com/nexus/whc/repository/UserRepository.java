@@ -158,7 +158,10 @@ public class UserRepository {
 			Object[] param = { "m_user", list.get("seq_id"), list.get("user_id") };
 
 			// クエリを実行
-			result = jdbcTemplate.queryForList(sql, param);
+			/*result = jdbcTemplate.queryForList(sql, param);*/
+			List<Map<String, Object>> exclusiveDataCheckList = jdbcTemplate.queryForList(sql, param);
+			// TODO ロックテーブルにないデータだけリストに格納したい
+			result.addAll(exclusiveDataCheckList);
 
 		}
 		// 実行結果のリストを返す
@@ -210,4 +213,24 @@ public class UserRepository {
 		return result;
 	}
 
+	// ロックテーブルに編集したレコードを削除する
+	public int deleteLockTable(List<Map<String, Object>> dataExists) {
+		// 削除した件数
+		int result = 0;
+		for (Map<String, Object> list : dataExists) {
+			// SQL文の作成
+			String sql = "DELETE FROM s_lock "
+					+ "WHERE locking_table_name = ? "
+					+ "AND locking_record_id = ? "
+					+ "AND locking_user_id = ? ";
+
+			// ?の箇所を置換するデータの配列を定義する
+			Object[] param = { "m_user", list.get("seq_id"), list.get("user_id") };
+
+			// クエリを実行
+			result = jdbcTemplate.update(sql, param);
+		}
+		// 実行件数を返す
+		return result;
+	}
 }

@@ -200,6 +200,10 @@ public class UserController {
 		int result = userService.userDelete(dataExists);
 		System.out.println("削除件数:" + result);
 
+		// 排他チェック（編集ロック解除）
+		int deleteLockData = userService.deleteLockTable(dataExists);
+		System.out.println("削除件数:" + deleteLockData);
+
 		// ダイアログで「OK」が押された後、ユーザマスタ一覧(SMSUS001)にリダイレクト
 		return "redirect:/user/list";
 	}

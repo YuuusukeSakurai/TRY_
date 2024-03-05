@@ -63,4 +63,10 @@ public class UserService {
 		int result = userRepository.registLockTable(dataExists);
 		return result;
 	}
+
+	// ロックテーブルに編集したレコードを削除する。
+	public int deleteLockTable(List<Map<String, Object>> dataExists) {
+		int result = userRepository.deleteLockTable(dataExists);
+		return result;
+	}
 }
