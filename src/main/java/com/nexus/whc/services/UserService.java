@@ -51,4 +51,10 @@ public class UserService {
 		return result;
 
 	}
+
+	// データがロックテーブルに登録されているか確認（排他チェック（編集ロック確認））
+	public List<Map<String, Object>> editLockCheckList(List<Map<String, Object>> dataExistList) {
+		List<Map<String, Object>> result = userRepository.editLockCheck(dataExistList);
+		return result;
+	}
 }

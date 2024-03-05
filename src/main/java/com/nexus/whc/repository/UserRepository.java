@@ -162,16 +162,32 @@ public class UserRepository {
 		return result;
 	}
 
-	/*	// 編集中かどうかロックテーブルを確認する
-		public List<Map<String, Object>> editLockCheck(List<E>) {
-			// ロックテーブルに登録されていないデータを登録する
-			List<Map<String, Object>> result = new ArrayList<>();
-			
-			// SQL文の作成
-			String sql = "SELECT * FROM s_lock"
-			           + "WHERE s_lock.locking_table_name = 'm_user' "
-			           + "  AND s_lock.locking_record_id = ?"
-			           + "  AND s_lock.locking_user_id = ?";
-	
-		}*/
+	// 編集中かどうかロックテーブルを確認する
+	public List<Map<String, Object>> editLockCheck(List<Map<String, Object>> dataExistList) {
+		// ロックテーブルに登録されていないデータを登録する
+		List<Map<String, Object>> result = new ArrayList<>();
+
+		// SQL文の作成
+		String sql = "SELECT * FROM s_lock"
+				+ " WHERE s_lock.locking_table_name = ? "
+				+ "  AND s_lock.locking_record_id = ?"
+				+ "  AND s_lock.locking_user_id = ?";
+		// 選択されたシーケンスID分データが存在するか確認する
+		for (Map<String, Object> list : dataExistList) {
+
+			// ?の箇所を置換するデータの配列を定義する
+			Object[] param = { "m_user", list.get("seq_id"), list.get("user_id") };
+
+			// クエリを実行
+			result = jdbcTemplate.queryForList(sql, param);
+
+			// 結果が存在すればリストに追加
+			if (!dataExistList.isEmpty()) {
+				result.addAll(dataExistList);
+			}
+		}
+		// 実行結果のリストを返す
+		return result;
+
+	}
 }
