@@ -1,5 +1,6 @@
 package com.nexus.whc.controller;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -140,8 +141,55 @@ public class UserController {
 			return "redirect:/user/regist?seq_id=0";
 		}
 
+		// ユーザマスタからデータが登録されているか検索する。
+		List<Map<String, Object>> userSearchList = userService.userSearch(userId, userName, mailAddress);
+
+		// TODO 改善
+		// すでに登録されている場合
+		if (!userSearchList.isEmpty()) {
+			String confirmId = userSearchList.get(0).get("user_id").toString();
+			String confirmName = userSearchList.get(0).get("user_name").toString();
+			String confirmMail = userSearchList.get(0).get("mail_address").toString();
+
+			String item = "";
+			String duplicate = "";
+			if (confirmId.equals(userId)) {
+				item = " ユーザID";
+				duplicate = " " + userId;
+			}
+			if (confirmName.equals(userName)) {
+				item += " ユーザ名";
+				duplicate += " " + userName;
+			}
+			if (confirmMail.equals(mailAddress)) {
+				item += " メールアドレス";
+				duplicate += " " + mailAddress;
+			}
+			error = messageSource.getMessage("COM01E011",
+					new String[] { item, duplicate, "ユーザマスタ" },
+					Locale.getDefault());
+			attr.addFlashAttribute("message", error);
+			return "redirect:/user/regist?seq_id=0";
+		}
+		// ユーザマスタに登録されている最大のシークエンスIDを取得する
+		Map<String, Object> maxSeqId = userService.maxSeqId();
+		// 取得したシークエンスIDに＋1を足す
+		int settingSeqId = ((Integer) maxSeqId.get("seq_id")) + 1;
+
+		// パスワードを自動生成する
+		SecureRandom secureRandom = new SecureRandom();
+		StringBuilder stringBuilder = new StringBuilder();
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for (int i = 0; i < 64; i++) {
+			int index = secureRandom.nextInt(characters.length());
+			stringBuilder.append(characters.charAt(index));
+		}
+		String passWord = stringBuilder.toString();
+
 		// ユーザマスタに新規登録
-		int result = userService.userRegist(userId, userName, authStatus, mailAddress);
+		int result = userService.userRegist(settingSeqId, userId, userName, authStatus, passWord, mailAddress);
+
 		System.out.println("登録件数:" + result);
 		return "redirect:/user/list";
 	}

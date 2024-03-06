@@ -22,6 +22,14 @@ public class UserService {
 		return allUserList;
 	}
 
+	// ユーザマスタからデータが登録されているか検索する
+	public List<Map<String, Object>> userSearch(String userId, String userName, String mailAddress) {
+
+		List<Map<String, Object>> userSearchList = userRepository.userSearch(userId, userName, mailAddress);
+
+		return userSearchList;
+	}
+
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
 	public List<Map<String, Object>> allUserSearch(String userId, String userName,
 			String authStatus, String mailAddress) {
@@ -33,8 +41,9 @@ public class UserService {
 	}
 
 	// ユーザマスタへの新規登録
-	public int userRegist(String userId, String userName, String authStatus, String mailAddress) {
-		int result = userRepository.userRegist(userId, userName, authStatus, mailAddress);
+	public int userRegist(int settingSeqId, String userId, String userName, String password, String authStatus,
+			String mailAddress) {
+		int result = userRepository.userRegist(settingSeqId, userId, userName, authStatus, password, mailAddress);
 		return result;
 
 	}
@@ -68,5 +77,11 @@ public class UserService {
 	public int deleteLockTable(List<Map<String, Object>> dataExists) {
 		int result = userRepository.deleteLockTable(dataExists);
 		return result;
+	}
+
+	// シークエンスIDの最大値を取得する
+	public Map<String, Object> maxSeqId() {
+		Map<String, Object> maxSeqId = userRepository.maxSeqId();
+		return maxSeqId;
 	}
 }

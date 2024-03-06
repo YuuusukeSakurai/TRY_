@@ -37,6 +37,25 @@ public class UserRepository {
 		return allUserList;
 	}
 
+	// ユーザマスタからデータが登録されているか検索する
+	public List<Map<String, Object>> userSearch(String userId, String userName, String mailAddress) {
+		// SQL文の作成
+		String sql = "SELECT seq_id, user_id, user_name, mail_address "
+				+ "FROM m_user "
+				+ "WHERE user_id = ? "
+				+ "OR  user_name = ? "
+				+ "OR  mail_address = ? ";
+
+		// ？の箇所を置換するデータの配列を定義
+		Object[] param = { userId, userName, mailAddress };
+
+		// クエリを実行
+		List<Map<String, Object>> userSearchList = jdbcTemplate.queryForList(sql, param);
+
+		// 検索結果を返す
+		return userSearchList;
+	}
+
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
 	public List<Map<String, Object>> allUserSearch(String userId, String userName,
 			String authStatus, String mailAddress) {
@@ -90,12 +109,13 @@ public class UserRepository {
 	}
 
 	// ユーザマスタへの新規登録
-	public int userRegist(String userId, String userName, String authStatus, String mailAddress) {
+	public int userRegist(int settingSeqId, String userId, String userName, String password, String authStatus,
+			String mailAddress) {
 
 		// SQL文の作成
-		String sql = "INSERT INTO m_user (user_id, user_name, PASSWORD, auth_id, mail_address, delete_flg) \n"
-				+ "VALUES(? , ?,\"77rgzxvbulow9yvlttyvng7zbq9ydtlndpkj2jg05r64iiyned7nnwdcl9hqpn76\","
-				+ " ?, ?, 0)";
+		String sql = "INSERT INTO m_user (seq_id, user_id, user_name, password, auth_id, mail_address, delete_flg) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, 0);";
+
 		// 権限が選択されている場合
 		if (authStatus.equals("admin")) {
 			authStatus = "0";
@@ -104,7 +124,7 @@ public class UserRepository {
 		}
 
 		// ？の箇所を置換するデータの配列を定義
-		Object[] param = { userId, userName, authStatus, mailAddress };
+		Object[] param = { settingSeqId, userId, userName, password, authStatus, mailAddress };
 
 		// クエリを実行
 		int result = jdbcTemplate.update(sql, param);
@@ -232,5 +252,16 @@ public class UserRepository {
 		}
 		// 実行件数を返す
 		return result;
+	}
+
+	// シークエンスIDの最大値を取得する
+	public Map<String, Object> maxSeqId() {
+
+		// SQL文の作成
+		String sql = "SELECT seq_id FROM m_user WHERE seq_id = (SELECT MAX(seq_id) FROM m_user)";
+
+		// クエリの実行
+		Map<String, Object> maxSeqId = jdbcTemplate.queryForMap(sql);
+		return maxSeqId;
 	}
 }
