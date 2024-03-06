@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -126,6 +127,16 @@ public class UserController {
 
 		if (!error.isEmpty()) {
 			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
+			return "redirect:/user/regist?seq_id=0";
+		}
+
+		// メールアドレスのフォーマットチェック
+		String mailFormat = "^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@nexus-nt.co.jp";
+		Pattern formatCheck = Pattern.compile(mailFormat);
+		if (!formatCheck.matcher(mailAddress).find()) {
+			error = messageSource.getMessage("COM01E003", new String[] { "メールアドレスとして正しいフォーマット", "～@nexus-nt.co.jp" },
+					Locale.getDefault());
+			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
 
