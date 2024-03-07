@@ -94,9 +94,65 @@ public class UserController {
 				Model model) {*/
 	public String userRegist(@ModelAttribute UserForm userForm,
 			@RequestParam(name = "seq_id") String seqId,
+			RedirectAttributes attr,
 			Model model) {
+		// エラーメッセージ
+		String error = "";
 		// リクエストスコープにシークエンスIDを保存
 		model.addAttribute("seq_id", seqId);
+		// 排他チェック（削除）
+		String[] seqID = new String[] { seqId };
+		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqID);
+		System.out.println("排他チェックでデータを確認できた件数は:" + dataExists.size());
+		System.out.println(dataExists);
+		// 排他チェック（削除）によって該当データが存在しない場合
+		if (dataExists.isEmpty()) {
+			error = messageSource.getMessage("COM01E005", new String[] {},
+					Locale.getDefault());
+			// リクエストスコープにエラーメッセージを保存
+			attr.addFlashAttribute("message", error);
+			// ユーザマスタ一覧(SMSUS001)にリダイレクト
+			return "redirect:/user/list";
+		}
+		// 排他チェック（編集ロック確認）
+		List<Map<String, Object>> exclusiveDataCheckList = userService.editLockCheckList(dataExists);
+		/*System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList.size());*/
+		System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList);
+		// 他のユーザーが編集の場合（レコードが、ロックテーブルに登録されている場合）
+		if (!exclusiveDataCheckList.isEmpty()) {
+			/*if (exclusiveDataCheckList.isEmpty()) {*/
+			// TODO ユーザー情報の特定
+			/*			List<Map<String, Object>> editUserInfo = userService
+								.allUserSearch(exclusiveDataCheckList.get(0).get("user_id").toString(), "", "", "");
+						System.out.println("こいつが編集中" + editUserInfo);*/
+			// エラーメッセージの格納
+			error = messageSource.getMessage("COM01E006", new String[] {},
+					Locale.getDefault());
+			// リクエストスコープにエラーメッセージを保存
+			attr.addFlashAttribute("message", error);
+			// ユーザマスタ一覧(SMSUS001)にリダイレクト
+			return "redirect:/user/list";
+		}
+		// 排他チェック（編集ロック登録）
+		int registLockData = userService.registLockTable(dataExists);
+		System.out.println("登録件数は:" + registLockData + "件です。");
+
+		// ユーザを検索
+		String userId = dataExists.get(0).get("user_id").toString();
+		List<Map<String, Object>> allUserList = userService.allUserSearch(userId, "", "", "");
+
+		// 権限の判定
+		String authStatus = "";
+		if (allUserList.get(0).get("auth_id").toString().equals("0")) {
+			authStatus = "admin";
+		} else {
+			authStatus = "user";
+		}
+		model.addAttribute("userId", allUserList.get(0).get("user_id"));
+		model.addAttribute("userName", allUserList.get(0).get("user_name"));
+		model.addAttribute("permission", authStatus);
+		model.addAttribute("mailAddress", allUserList.get(0).get("mail_address"));
+
 		// ユーザマスタ登録画面に遷移
 		return "SMSUS002";
 	}
@@ -200,7 +256,7 @@ public class UserController {
 		// ユーザマスタに新規登録
 		int result = userService.userRegist(settingSeqId, userId, userName, authStatus, passWord, mailAddress);
 		System.out.println("登録件数は:" + result);
-		
+
 		// 登録して次へボタン押下時
 		if (nextRegistButton.equals("nextRegist")) {
 			return "redirect:/user/regist?seq_id=0";
@@ -229,7 +285,7 @@ public class UserController {
 		// 排他チェック（削除）
 		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqId);
 
-		System.out.println("排他チェック削除の件数は:" + dataExists.size());
+		System.out.println("排他チェック削除を確認した件数は:" + dataExists.size());
 
 		for (Map<String, Object> list : dataExists) {
 			System.out.println("seq_isは:" + list.get("seq_id"));
