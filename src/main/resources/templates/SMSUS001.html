@@ -119,7 +119,7 @@
 											th:value="${user.seq_id}"></th>
 									<td th:text="${user.user_id}"></td>
 									<td><a th:text="${user.user_name}" href="/user/regist"
-											th:href="@{/user/regist(seq_id=${user.user_id})}"></a></td>
+											th:href="@{/user/regist(seq_id=${user.seq_id})}"></a></td>
 									<td th:text="${user.auth_status}"></td>
 									<td th:text="${user.mail_address}"></td>
 								</tr>
