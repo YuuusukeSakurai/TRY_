@@ -106,15 +106,13 @@ public class UserController {
 	public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
 			@RequestParam(name = "userName", defaultValue = "") String userName,
 			@RequestParam(name = "permission", defaultValue = "") String authStatus,
-			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model,
+			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress,
+			@RequestParam(name = "nextRegist", defaultValue = "") String nextRegistButton,
+			Model model,
 			RedirectAttributes attr) {
 
 		// エラーメッセージ
 		String error = "";
-		/*attr.addFlashAttribute("userId", userId);
-		attr.addFlashAttribute("userName", userName);
-		attr.addFlashAttribute("permission", authStatus);
-		attr.addFlashAttribute("mailAddress", mailAddress);*/
 		// 未入力項目がある場合
 		if (userId.isEmpty()) {
 			error += " ユーザID";
@@ -201,7 +199,12 @@ public class UserController {
 
 		// ユーザマスタに新規登録
 		int result = userService.userRegist(settingSeqId, userId, userName, authStatus, passWord, mailAddress);
+		System.out.println("登録件数は:" + result);
 		
+		// 登録して次へボタン押下時
+		if (nextRegistButton.equals("nextRegist")) {
+			return "redirect:/user/regist?seq_id=0";
+		}
 		return "redirect:/user/list";
 	}
 
