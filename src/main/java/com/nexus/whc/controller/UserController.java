@@ -111,10 +111,10 @@ public class UserController {
 
 		// エラーメッセージ
 		String error = "";
-		attr.addFlashAttribute("userId", userId);
+		/*attr.addFlashAttribute("userId", userId);
 		attr.addFlashAttribute("userName", userName);
 		attr.addFlashAttribute("permission", authStatus);
-		attr.addFlashAttribute("mailAddress", mailAddress);
+		attr.addFlashAttribute("mailAddress", mailAddress);*/
 		// 未入力項目がある場合
 		if (userId.isEmpty()) {
 			error += " ユーザID";
@@ -127,6 +127,10 @@ public class UserController {
 		}
 
 		if (!error.isEmpty()) {
+			attr.addFlashAttribute("userId", userId);
+			attr.addFlashAttribute("userName", userName);
+			attr.addFlashAttribute("permission", authStatus);
+			attr.addFlashAttribute("mailAddress", mailAddress);
 			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
 			return "redirect:/user/regist?seq_id=0";
 		}
@@ -137,6 +141,10 @@ public class UserController {
 		if (!formatCheck.matcher(mailAddress).find()) {
 			error = messageSource.getMessage("COM01E003", new String[] { "メールアドレスとして正しいフォーマット", "～@nexus-nt.co.jp" },
 					Locale.getDefault());
+			attr.addFlashAttribute("userId", userId);
+			attr.addFlashAttribute("userName", userName);
+			attr.addFlashAttribute("permission", authStatus);
+			attr.addFlashAttribute("mailAddress", mailAddress);
 			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
@@ -168,6 +176,10 @@ public class UserController {
 			error = messageSource.getMessage("COM01E011",
 					new String[] { item, duplicate, "ユーザマスタ" },
 					Locale.getDefault());
+			attr.addFlashAttribute("userId", userId);
+			attr.addFlashAttribute("userName", userName);
+			attr.addFlashAttribute("permission", authStatus);
+			attr.addFlashAttribute("mailAddress", mailAddress);
 			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
@@ -189,8 +201,7 @@ public class UserController {
 
 		// ユーザマスタに新規登録
 		int result = userService.userRegist(settingSeqId, userId, userName, authStatus, passWord, mailAddress);
-
-		System.out.println("登録件数:" + result);
+		
 		return "redirect:/user/list";
 	}
 
