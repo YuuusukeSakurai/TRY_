@@ -1,10 +1,13 @@
 package com.nexus.whc.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +18,7 @@ public class UserRepository {
 	JdbcTemplate jdbcTemplate;
 
 	// ユーザマスタの情報を取得する
-	public List<Map<String, Object>> allUserInfo() {
+	public List<Map<String, Object>> allUserInfo(int pageSiza, int offset) {
 
 		// SQL文の作成
 		String sql = "SELECT "
@@ -28,17 +31,43 @@ public class UserRepository {
 				+ "FROM m_user "
 				+ "LEFT JOIN m_authority ON m_user.auth_id = m_authority.auth_id "
 				+ "WHERE delete_flg = 0 "
-				+ "ORDER BY user_id ASC";
+				+ "ORDER BY user_id ASC "
+				+ "LIMIT ? "
+				+ "OFFSET ?";
 
 		// クエリを実行
-		List<Map<String, Object>> allUserList = jdbcTemplate.queryForList(sql);
+		List<Map<String, Object>> allUserList = jdbcTemplate.queryForList(sql, pageSiza, offset);
 
 		// 取得したリストを返す
 		return allUserList;
 	}
 
+	/*	// ユーザマスタの情報を取得する
+		public List<Map<String, Object>> allUserInfo() {
+			
+			// SQL文の作成
+			String sql = "SELECT "
+					+ "m_user.seq_id, "
+					+ "m_user.user_id, "
+					+ "m_user.user_name, "
+					+ "m_user.auth_id, "
+					+ "m_user.mail_address, "
+					+ "m_authority.auth_status "
+					+ "FROM m_user "
+					+ "LEFT JOIN m_authority ON m_user.auth_id = m_authority.auth_id "
+					+ "WHERE delete_flg = 0 "
+					+ "ORDER BY user_id ASC";
+			
+			// クエリを実行
+			List<Map<String, Object>> allUserList = jdbcTemplate.queryForList(sql);
+			
+			// 取得したリストを返す
+			return allUserList;
+		}
+	*/
 	// ユーザマスタからデータが登録されているか検索する
-	public List<Map<String, Object>> userSearch(String userId, String userName, String mailAddress) {
+	public Map<String, Object> userSearch(String userId, String userName, String mailAddress) {
+
 		// SQL文の作成
 		String sql = "SELECT seq_id, user_id, user_name, mail_address "
 				+ "FROM m_user "
@@ -48,14 +77,34 @@ public class UserRepository {
 
 		// ？の箇所を置換するデータの配列を定義
 		Object[] param = { userId, userName, mailAddress };
-
-		// クエリを実行
-		List<Map<String, Object>> userSearchList = jdbcTemplate.queryForList(sql, param);
-
-		// 検索結果を返す
-		return userSearchList;
+		try {
+			Map<String, Object> userSearchMap = jdbcTemplate.queryForMap(sql, param);
+			return userSearchMap;
+		} catch (EmptyResultDataAccessException e) {
+			// 登録されていない場合
+			return Collections.emptyMap();
+		}
 	}
 
+	/*	// ユーザマスタからデータが登録されているか検索する
+		public List<Map<String, Object>> userSearch(String userId, String userName, String mailAddress) {
+			// SQL文の作成
+			String sql = "SELECT seq_id, user_id, user_name, mail_address "
+					+ "FROM m_user "
+					+ "WHERE user_id = ? "
+					+ "OR  user_name = ? "
+					+ "OR  mail_address = ? ";
+			
+			// ？の箇所を置換するデータの配列を定義
+			Object[] param = { userId, userName, mailAddress };
+			
+			// クエリを実行
+			List<Map<String, Object>> userSearchList = jdbcTemplate.queryForList(sql, param);
+			
+			// 検索結果を返す
+			return userSearchList;
+		}
+	*/
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
 	public List<Map<String, Object>> allUserSearch(String userId, String userName,
 			String authStatus, String mailAddress) {
@@ -213,24 +262,30 @@ public class UserRepository {
 	}
 
 	// ユーザマスタから選択行削除
-	public int userDelete(List<Map<String, Object>> dataExists) {
-		// 削除した件数
-		int result = 0;
+	public List<Map<String, Object>> userDelete(List<Map<String, Object>> registLockDataList) {
+		// 削除したデータのリスト
+		List<Map<String, Object>> resultList = new ArrayList<>();
 
-		for (Map<String, Object> list : dataExists) {
+		for (Map<String, Object> data : registLockDataList) {
+			// SQL文の作成
+
 			// SQL文の作成
 			String sql = "UPDATE m_user "
 					+ "SET delete_flg = 1 "
 					+ "WHERE seq_id = ?";
 
 			// ?の箇所を置換するデータの配列を定義する
-			Object[] param = { list.get("seq_id") };
+			Object[] params = { data.get("seq_id") };
 
 			// クエリを実行
-			result = jdbcTemplate.update(sql, param);
+			int rowsAffected = jdbcTemplate.update(sql, params);
+			// 実行結果のデータを作成してリストに追加
+			Map<String, Object> resultData = new HashMap<>();
+			resultData.put("seq_id", data.get("seq_id"));
+			resultList.add(resultData);
 		}
-		// 実行件数を返す
-		return result;
+		// 削除したデータのリストを返す
+		return resultList;
 	}
 
 	// ロックテーブルに編集したレコードを削除する

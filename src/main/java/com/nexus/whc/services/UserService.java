@@ -15,21 +15,37 @@ public class UserService {
 	UserRepository userRepository;
 
 	// ユーザマスタ情報を取得する(削除されていないユーザー)
-	public List<Map<String, Object>> allUserInfo() {
+	public List<Map<String, Object>> allUserInfo(int pageSiza, int offset) {
 
-		List<Map<String, Object>> allUserList = userRepository.allUserInfo();
+		List<Map<String, Object>> allUserList = userRepository.allUserInfo(pageSiza, offset);
 
 		return allUserList;
 	}
 
+	/*	// ユーザマスタ情報を取得する(削除されていないユーザー)
+		public List<Map<String, Object>> allUserInfo() {
+			
+			List<Map<String, Object>> allUserList = userRepository.allUserInfo();
+			
+			return allUserList;
+		}
+	*/
 	// ユーザマスタからデータが登録されているか検索する
-	public List<Map<String, Object>> userSearch(String userId, String userName, String mailAddress) {
+	public Map<String, Object> userSearch(String userId, String userName, String mailAddress) {
 
-		List<Map<String, Object>> userSearchList = userRepository.userSearch(userId, userName, mailAddress);
+		Map<String, Object> userSearchMap = userRepository.userSearch(userId, userName, mailAddress);
 
-		return userSearchList;
+		return userSearchMap;
 	}
 
+	/*	// ユーザマスタからデータが登録されているか検索する
+		public List<Map<String, Object>> userSearch(String userId, String userName, String mailAddress) {
+			
+			List<Map<String, Object>> userSearchList = userRepository.userSearch(userId, userName, mailAddress);
+			
+			return userSearchList;
+		}
+	*/
 	// ユーザマスタ＋権限マスタから検索条件によって情報を取得する
 	public List<Map<String, Object>> allUserSearch(String userId, String userName,
 			String authStatus, String mailAddress) {
@@ -49,9 +65,15 @@ public class UserService {
 	}
 
 	// ユーザマスタから選択行削除
-	public int userDelete(List<Map<String, Object>> exclusiveDataCheckList) {
-		int result = userRepository.userDelete(exclusiveDataCheckList);
-		return result;
+	/*	public int userDelete(List<Map<String, Object>> exclusiveDataCheckList) {
+			int result = userRepository.userDelete(exclusiveDataCheckList);
+			return result;
+		}*/
+	public List<Map<String, Object>> userDelete(List<Map<String, Object>> registLockDataList) {
+		// 削除したデータのリスト
+		List<Map<String, Object>> resultList = userRepository.userDelete(registLockDataList);
+		// 削除したデータのリストを返す
+		return resultList;
 	}
 
 	// データ存在確認(排他チェック（削除）)

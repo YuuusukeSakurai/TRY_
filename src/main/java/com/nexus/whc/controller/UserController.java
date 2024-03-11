@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.nexus.whc.Form.UserForm;
+import com.nexus.whc.services.CommonService;
 import com.nexus.whc.services.UserService;
 
 /*
  * UserController.java
- * 
  * UserControllerクラス
  */
 
@@ -39,15 +41,26 @@ public class UserController {
 	UserService userService;
 
 	@Autowired
-	// メッセージ格納
+	// データベース操作クラス
+	CommonService commonService;
+
+	@Autowired
+	// メッセージ格納クラス
 	MessageSource messageSource;
 
-	// ユーザの一覧表示
-	@GetMapping("/list")
-	public String userList(Model model) {
+	// ユーザマスタテーブル名
+	String userMaster = "m_user";
 
+	// ユーザマスタ一覧(SMSUS001.html)表示
+	@GetMapping("/list")
+	public String userList(
+			@RequestParam(defaultValue = "1") int page,
+			Model model) {
+
+		// ユーザマスタ一覧(SMSUS001.html)にユーザ情報を表示する上限
+		int pageSize = 20;
 		// ユーザ情報を取得(削除されていない)
-		List<Map<String, Object>> allUserList = userService.allUserInfo();
+		List<Map<String, Object>> allUserList = userService.allUserInfo(pageSize, page -1);
 
 		// リクエストスコープに保存
 		model.addAttribute("allUserList", allUserList);
@@ -56,7 +69,7 @@ public class UserController {
 		return "SMSUS001";
 	}
 
-	// ユーザ検索
+	// ユーザ検索(SMSUS001)
 	@PostMapping("/list")
 	public String allUserSearch(
 			@RequestParam(name = "userId", defaultValue = "") String userId,
@@ -88,23 +101,24 @@ public class UserController {
 
 	}
 
-	// ユーザーマスタ登録画面（SMSUS002）表示
+	// ユーザーマスタ登録画面（SMSUS002.html）表示
 	@GetMapping("/regist")
 	public String userRegist(
 			@ModelAttribute UserForm userForm,
 			@RequestParam(name = "seq_id") String seqId,
-
 			RedirectAttributes attr,
 			Model model) {
 		// エラーメッセージ
 		String error = "";
 		// リクエストスコープにシークエンスIDを保存
 		model.addAttribute("seq_id", seqId);
-		// シークエンスIDが異なる場合
+		// ユーザマスタ一覧(SMSUS001.html)から新規登録ボタン押下
 		if (seqId.equals("0")) {
-			// ユーザマスタ登録画面に遷移
+			// ユーザーマスタ登録画面（SMSUS002.html）表示
 			return "SMSUS002";
 		}
+
+		// ユーザマスタ一覧(SMSUS001.html)からユーザーリンクを押下（編集）
 		// 排他チェック（削除）
 		String[] seqID = new String[] { seqId };
 		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqID);
@@ -120,86 +134,111 @@ public class UserController {
 			// ユーザマスタ一覧(SMSUS001)にリダイレクト
 			return "redirect:/user/list";
 		}
+		// 排他チェック（編集ロック確認）
+		List<Map<String, Object>> exclusiveDataCheckList = commonService.editLockCheckList(userMaster, dataExists);
+		System.out.println(exclusiveDataCheckList);
+		// 他のユーザーが編集の場合（レコードが、ロックテーブルに登録されている場合）
+		if (!exclusiveDataCheckList.isEmpty()) {
+			// エラーメッセージの格納
+			error = messageSource.getMessage("COM01E006", new String[] {}, Locale.getDefault());
+			// リクエストスコープにエラーメッセージを保存
+			attr.addFlashAttribute("message", error);
+			// ユーザマスタ一覧(SMSUS001)にリダイレクト
+			return "redirect:/user/list";
+		}
+		// ユーザーリンクからユーザ情報を取得する
+		List<Map<String, Object>> userSearchList = userService
+				.allUserSearch(dataExists.get(0).get("user_id").toString(), "", "", "");
+		System.out.println(userSearchList);
+		userForm.setUserId(userSearchList.get(0).get("user_id").toString());
+		// userFormに取得したユーザ情報を格納する
+		userForm.setUserName(userSearchList.get(0).get("user_name").toString());
+		// 権限をHTML用変換して格納する
+		if (userSearchList.get(0).get("auth_status").toString().equals("管理者")) {
+			userForm.setPermission("admin");
+		} else if (userSearchList.get(0).get("auth_status").toString().equals("一般")) {
+			userForm.setPermission("user");
+		}
+		userForm.setMailAddress(userSearchList.get(0).get("mail_address").toString());
+
 		return "SMSUS002";
 	}
 
 	// ユーザーマスタ登録画面（SMSUS002）から登録処理
 	@PostMapping("/regist")
-	public String userRegist(@RequestParam(name = "userId", defaultValue = "") String userId,
-			@RequestParam(name = "userName", defaultValue = "") String userName,
-			@RequestParam(name = "permission", defaultValue = "") String authStatus,
-			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress,
+	public String userRegist(
+			@Validated @ModelAttribute UserForm userForm,
+			BindingResult bindingResult,
 			@RequestParam(name = "nextRegist", defaultValue = "") String nextRegistButton,
+			@RequestParam(name = "update", defaultValue = "") String updateButton,
 			Model model,
 			RedirectAttributes attr) {
 
 		// エラーメッセージ
 		String error = "";
+
 		// 未入力項目がある場合
-		if (userId.isEmpty()) {
+		if (userForm.getUserId().isEmpty()) {
 			error += " ユーザID";
 		}
-		if (userName.isEmpty()) {
+		if (userForm.getUserName().isEmpty()) {
 			error += " ユーザ名";
 		}
-		if (mailAddress.isEmpty()) {
+		if (userForm.getMailAddress().isEmpty()) {
 			error += " メールアドレス";
 		}
 
 		if (!error.isEmpty()) {
-			attr.addFlashAttribute("userId", userId);
-			attr.addFlashAttribute("userName", userName);
-			attr.addFlashAttribute("permission", authStatus);
-			attr.addFlashAttribute("mailAddress", mailAddress);
+			attr.addFlashAttribute("userForm", userForm);
 			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
+			if (updateButton.equals("update")) {
+				System.out.println("こんにち");
+				return "redirect:/user/regist?seq_id=30";
+			}
 			return "redirect:/user/regist?seq_id=0";
 		}
 
 		// メールアドレスのフォーマットチェック
 		String mailFormat = "^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@nexus-nt.co.jp";
 		Pattern formatCheck = Pattern.compile(mailFormat);
-		if (!formatCheck.matcher(mailAddress).find()) {
+
+		if (!formatCheck.matcher(userForm.getMailAddress()).find()) {
 			error = messageSource.getMessage("COM01E003", new String[] { "メールアドレスとして正しいフォーマット", "～@nexus-nt.co.jp" },
 					Locale.getDefault());
-			attr.addFlashAttribute("userId", userId);
-			attr.addFlashAttribute("userName", userName);
-			attr.addFlashAttribute("permission", authStatus);
-			attr.addFlashAttribute("mailAddress", mailAddress);
+			attr.addFlashAttribute("userForm", userForm);
 			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
 
 		// ユーザマスタからデータが登録されているか検索する。
-		List<Map<String, Object>> userSearchList = userService.userSearch(userId, userName, mailAddress);
+		Map<String, Object> userSearchMap = userService.userSearch(userForm.getUserId(), userForm.getUserName(),
+				userForm.getMailAddress());
 
-		// TODO 改善
 		// すでに登録されている場合
-		if (!userSearchList.isEmpty()) {
-			String confirmId = userSearchList.get(0).get("user_id").toString();
-			String confirmName = userSearchList.get(0).get("user_name").toString();
-			String confirmMail = userSearchList.get(0).get("mail_address").toString();
+		if (!userSearchMap.isEmpty()) {
+			String confirmId = userSearchMap.get("user_id").toString();
+			String confirmName = userSearchMap.get("user_name").toString();
+			String confirmMail = userSearchMap.get("mail_address").toString();
 
 			String item = "";
 			String duplicate = "";
-			if (confirmId.equals(userId)) {
+			if (confirmId.equals(userForm.getUserId())) {
 				item = " ユーザID";
-				duplicate = " " + userId;
+				duplicate = " " + userForm.getUserId();
+				System.out.println("");
 			}
-			if (confirmName.equals(userName)) {
+			if (confirmName.equals(userForm.getUserName())) {
 				item += " ユーザ名";
-				duplicate += " " + userName;
+				duplicate += " " + userForm.getUserName();
 			}
-			if (confirmMail.equals(mailAddress)) {
+			if (confirmMail.equals(userForm.getMailAddress())) {
 				item += " メールアドレス";
-				duplicate += " " + mailAddress;
+				duplicate += " " + userForm.getMailAddress();
 			}
 			error = messageSource.getMessage("COM01E011",
 					new String[] { item, duplicate, "ユーザマスタ" },
 					Locale.getDefault());
-			attr.addFlashAttribute("userId", userId);
-			attr.addFlashAttribute("userName", userName);
-			attr.addFlashAttribute("permission", authStatus);
-			attr.addFlashAttribute("mailAddress", mailAddress);
+			attr.addFlashAttribute("userForm", userForm);
 			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
@@ -208,20 +247,12 @@ public class UserController {
 		// 取得したシークエンスIDに＋1を足す
 		int settingSeqId = ((Integer) maxSeqId.get("seq_id")) + 1;
 
-		// パスワードを自動生成する
-		SecureRandom secureRandom = new SecureRandom();
-		StringBuilder stringBuilder = new StringBuilder();
-		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-		for (int i = 0; i < 64; i++) {
-			int index = secureRandom.nextInt(characters.length());
-			stringBuilder.append(characters.charAt(index));
-		}
-		String passWord = stringBuilder.toString();
+		// パスワードを生成
+		String passWord = passWord();
 
 		// ユーザマスタに新規登録
-		int result = userService.userRegist(settingSeqId, userId, userName, authStatus, passWord, mailAddress);
-		System.out.println("登録件数は:" + result);
+		int result = userService.userRegist(settingSeqId, userForm.getUserId(), userForm.getUserName(),
+				userForm.getPermission(), passWord, userForm.getMailAddress());
 
 		// 登録して次へボタン押下時
 		if (nextRegistButton.equals("nextRegist")) {
@@ -229,6 +260,20 @@ public class UserController {
 		}
 		return "redirect:/user/list";
 	}
+
+	/*	ユーザーマスタ登録画面（SMSUS002）から更新処理
+		@PostMapping("/update")
+		public String userUpdate(@Validated @ModelAttribute UserForm userForm,
+				Model model,
+				RedirectAttributes attr) {
+			// エラーメッセージ
+			String error = "";
+	
+			// 未入力項目がある場合
+			System.out.println("未入力確認");
+	
+			return "redirect:/user/regist?seq_id=30";
+		}*/
 
 	/*ユーザマスタ一覧(SMSUS001)から選択行削除*/
 	@PostMapping("/delete")
@@ -239,8 +284,9 @@ public class UserController {
 
 		// エラーメッセージ
 		String errorMessage = "";
-		System.out.println(Arrays.toString(seqId));
+		System.out.println("選択されているシークエンスIDは" + Arrays.toString(seqId));
 
+		// 選択しないで削除した場合
 		if (seqId.length == 0) {
 			errorMessage = messageSource.getMessage("COM01W003", new String[] {},
 					Locale.getDefault());
@@ -249,14 +295,8 @@ public class UserController {
 			return "redirect:/user/list";
 		}
 		// 排他チェック（削除）
-		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqId);
-
-		System.out.println("排他チェック削除を確認した件数は:" + dataExists.size());
-
-		for (Map<String, Object> list : dataExists) {
-			System.out.println("seq_isは:" + list.get("seq_id"));
-
-		}
+		List<Map<String, Object>> dataExists = commonService.dataExistCheck(userMaster, seqId);
+		System.out.println("削除されていないリストは" + dataExists);
 		// 排他チェック（削除）によって該当データが存在しない場合
 		if (dataExists.isEmpty()) {
 			errorMessage = messageSource.getMessage("COM01E005", new String[] {},
@@ -266,41 +306,46 @@ public class UserController {
 			// ユーザマスタ一覧(SMSUS001)にリダイレクト
 			return "redirect:/user/list";
 		}
-		System.out.println(dataExists);
 
 		// 排他チェック（編集ロック確認）
-		List<Map<String, Object>> exclusiveDataCheckList = userService.editLockCheckList(dataExists);
-		/*System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList.size());*/
-		System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList);
+		List<Map<String, Object>> exclusiveDataCheckList = commonService.editLockCheckList(userMaster, dataExists);
 		// 他のユーザーが編集の場合（レコードが、ロックテーブルに登録されている場合）
 		if (!exclusiveDataCheckList.isEmpty()) {
-			/*if (exclusiveDataCheckList.isEmpty()) {*/
-			// TODO ユーザー情報の特定
-			/*			List<Map<String, Object>> editUserInfo = userService
-								.allUserSearch(exclusiveDataCheckList.get(0).get("user_id").toString(), "", "", "");
-						System.out.println("こいつが編集中" + editUserInfo);*/
 			// エラーメッセージの格納
-			errorMessage = messageSource.getMessage("COM01E006", new String[] {},
-					Locale.getDefault());
+			errorMessage = messageSource.getMessage("COM01E006", new String[] {}, Locale.getDefault());
 			// リクエストスコープにエラーメッセージを保存
 			attr.addFlashAttribute("message", errorMessage);
 			// ユーザマスタ一覧(SMSUS001)にリダイレクト
 			return "redirect:/user/list";
 		}
 		// 排他チェック（編集ロック登録）
-		int registLockData = userService.registLockTable(dataExists);
-		System.out.println("登録件数は:" + registLockData + "件です。");
+		List<Map<String, Object>> registLockDataList = commonService.registLockTable(userMaster, dataExists);
+		System.out.println("排他チェック（編集ロック登録）しているリストは" + registLockDataList);
 
 		// ユーザマスタから選択行削除
-		int result = userService.userDelete(dataExists);
-		System.out.println("削除件数:" + result);
+		List<Map<String, Object>> deleteUserList = userService.userDelete(registLockDataList);
+		System.out.println("削除したユーザーのシークエンスID:" + deleteUserList);
 
 		// 排他チェック（編集ロック解除）
-		int deleteLockData = userService.deleteLockTable(dataExists);
-		System.out.println("削除件数:" + deleteLockData);
+		int deleteLockData = commonService.deleteLockTable(registLockDataList);
+		System.out.println("ロックテーブルから削除した件数:" + deleteLockData);
 
 		// ダイアログで「OK」が押された後、ユーザマスタ一覧(SMSUS001)にリダイレクト
 		return "redirect:/user/list";
+	}
+
+	// パスワード生成するメソッド
+	public String passWord() {
+		SecureRandom secureRandom = new SecureRandom();
+		StringBuilder stringBuilder = new StringBuilder();
+		String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for (int i = 0; i < 64; i++) {
+			int index = secureRandom.nextInt(characters.length());
+			stringBuilder.append(characters.charAt(index));
+		}
+		String passWord = stringBuilder.toString();
+		return passWord;
 	}
 
 }
