@@ -42,9 +42,6 @@ public class UserController {
 	// メッセージ格納
 	MessageSource messageSource;
 
-	// エラーメッセージの格納
-	String errorMessage = "";
-
 	// ユーザの一覧表示
 	@GetMapping("/list")
 	public String userList(Model model) {
@@ -61,7 +58,8 @@ public class UserController {
 
 	// ユーザ検索
 	@PostMapping("/list")
-	public String allUserSearch(@RequestParam(name = "userId", defaultValue = "") String userId,
+	public String allUserSearch(
+			@RequestParam(name = "userId", defaultValue = "") String userId,
 			@RequestParam(name = "userName", defaultValue = "") String userName,
 			@RequestParam(name = "permission", defaultValue = "") String authStatus,
 			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress, Model model) {
@@ -77,7 +75,7 @@ public class UserController {
 
 		// 検索結果が0件の場合
 		if (allUserList.isEmpty()) {
-			errorMessage = messageSource.getMessage("COM01W001", new String[] { "ユーザーマスタ" },
+			String errorMessage = messageSource.getMessage("COM01W001", new String[] { "ユーザーマスタ" },
 					Locale.getDefault());
 			// リクエストスコープにエラーメッセージを保存
 			model.addAttribute("message", errorMessage);
@@ -92,66 +90,36 @@ public class UserController {
 
 	// ユーザーマスタ登録画面（SMSUS002）表示
 	@GetMapping("/regist")
-	public String userRegist(@ModelAttribute UserForm userForm,
+	public String userRegist(
+			@ModelAttribute UserForm userForm,
 			@RequestParam(name = "seq_id") String seqId,
+
 			RedirectAttributes attr,
 			Model model) {
+		// エラーメッセージ
+		String error = "";
 		// リクエストスコープにシークエンスIDを保存
 		model.addAttribute("seq_id", seqId);
+		// シークエンスIDが異なる場合
+		if (seqId.equals("0")) {
+			// ユーザマスタ登録画面に遷移
+			return "SMSUS002";
+		}
 		// 排他チェック（削除）
 		String[] seqID = new String[] { seqId };
 		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqID);
 		System.out.println("排他チェックでデータを確認できた件数は:" + dataExists.size());
 		System.out.println(dataExists);
+
 		// 排他チェック（削除）によって該当データが存在しない場合
 		if (dataExists.isEmpty()) {
-			errorMessage = messageSource.getMessage("COM01E005", new String[] {},
+			error = messageSource.getMessage("COM01E005", new String[] {},
 					Locale.getDefault());
 			// リクエストスコープにエラーメッセージを保存
-			attr.addFlashAttribute("message", errorMessage);
+			attr.addFlashAttribute("message", error);
 			// ユーザマスタ一覧(SMSUS001)にリダイレクト
 			return "redirect:/user/list";
 		}
-		// 排他チェック（編集ロック確認）
-		List<Map<String, Object>> exclusiveDataCheckList = userService.editLockCheckList(dataExists);
-		/*System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList.size());*/
-		System.out.println("編集ロックを確認した件数は：" + exclusiveDataCheckList);
-		// 他のユーザーが編集の場合（レコードが、ロックテーブルに登録されている場合）
-		if (!exclusiveDataCheckList.isEmpty()) {
-			/*if (exclusiveDataCheckList.isEmpty()) {*/
-			// TODO ユーザー情報の特定
-			/*			List<Map<String, Object>> editUserInfo = userService
-								.allUserSearch(exclusiveDataCheckList.get(0).get("user_id").toString(), "", "", "");
-						System.out.println("こいつが編集中" + editUserInfo);*/
-			// エラーメッセージの格納
-			errorMessage = messageSource.getMessage("COM01E006", new String[] {},
-					Locale.getDefault());
-			// リクエストスコープにエラーメッセージを保存
-			attr.addFlashAttribute("message", errorMessage);
-			// ユーザマスタ一覧(SMSUS001)にリダイレクト
-			return "redirect:/user/list";
-		}
-		// 排他チェック（編集ロック登録）
-		int registLockData = userService.registLockTable(dataExists);
-		System.out.println("登録件数は:" + registLockData + "件です。");
-
-		// ユーザを検索
-		String userId = dataExists.get(0).get("user_id").toString();
-		List<Map<String, Object>> allUserList = userService.allUserSearch(userId, "", "", "");
-
-		// 権限の判定
-		String authStatus = "";
-		if (allUserList.get(0).get("auth_id").toString().equals("0")) {
-			authStatus = "admin";
-		} else {
-			authStatus = "user";
-		}
-		model.addAttribute("userId", allUserList.get(0).get("user_id"));
-		model.addAttribute("userName", allUserList.get(0).get("user_name"));
-		model.addAttribute("permission", authStatus);
-		model.addAttribute("mailAddress", allUserList.get(0).get("mail_address"));
-
-		// ユーザマスタ登録画面に遷移
 		return "SMSUS002";
 	}
 
@@ -165,23 +133,25 @@ public class UserController {
 			Model model,
 			RedirectAttributes attr) {
 
+		// エラーメッセージ
+		String error = "";
 		// 未入力項目がある場合
 		if (userId.isEmpty()) {
-			errorMessage += " ユーザID";
+			error += " ユーザID";
 		}
 		if (userName.isEmpty()) {
-			errorMessage += " ユーザ名";
+			error += " ユーザ名";
 		}
 		if (mailAddress.isEmpty()) {
-			errorMessage += " メールアドレス";
+			error += " メールアドレス";
 		}
 
-		if (!errorMessage.isEmpty()) {
+		if (!error.isEmpty()) {
 			attr.addFlashAttribute("userId", userId);
 			attr.addFlashAttribute("userName", userName);
 			attr.addFlashAttribute("permission", authStatus);
 			attr.addFlashAttribute("mailAddress", mailAddress);
-			attr.addFlashAttribute("message", "COM01E001:" + errorMessage + "は必ず入力してください。");
+			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
 			return "redirect:/user/regist?seq_id=0";
 		}
 
@@ -189,14 +159,13 @@ public class UserController {
 		String mailFormat = "^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@nexus-nt.co.jp";
 		Pattern formatCheck = Pattern.compile(mailFormat);
 		if (!formatCheck.matcher(mailAddress).find()) {
-			errorMessage = messageSource.getMessage("COM01E003",
-					new String[] { "メールアドレスとして正しいフォーマット", "～@nexus-nt.co.jp" },
+			error = messageSource.getMessage("COM01E003", new String[] { "メールアドレスとして正しいフォーマット", "～@nexus-nt.co.jp" },
 					Locale.getDefault());
 			attr.addFlashAttribute("userId", userId);
 			attr.addFlashAttribute("userName", userName);
 			attr.addFlashAttribute("permission", authStatus);
 			attr.addFlashAttribute("mailAddress", mailAddress);
-			attr.addFlashAttribute("message", errorMessage);
+			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
 
@@ -224,14 +193,14 @@ public class UserController {
 				item += " メールアドレス";
 				duplicate += " " + mailAddress;
 			}
-			errorMessage = messageSource.getMessage("COM01E011",
+			error = messageSource.getMessage("COM01E011",
 					new String[] { item, duplicate, "ユーザマスタ" },
 					Locale.getDefault());
 			attr.addFlashAttribute("userId", userId);
 			attr.addFlashAttribute("userName", userName);
 			attr.addFlashAttribute("permission", authStatus);
 			attr.addFlashAttribute("mailAddress", mailAddress);
-			attr.addFlashAttribute("message", errorMessage);
+			attr.addFlashAttribute("message", error);
 			return "redirect:/user/regist?seq_id=0";
 		}
 		// ユーザマスタに登録されている最大のシークエンスIDを取得する
@@ -268,6 +237,8 @@ public class UserController {
 			RedirectAttributes attr) {
 		System.out.println("選択行削除処理の開始");
 
+		// エラーメッセージ
+		String errorMessage = "";
 		System.out.println(Arrays.toString(seqId));
 
 		if (seqId.length == 0) {
