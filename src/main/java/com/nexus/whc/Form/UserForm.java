@@ -1,17 +1,22 @@
 package com.nexus.whc.Form;
 
+import javax.validation.constraints.NotBlank;
+
 public class UserForm {
 
 	// ユーザーID
+	@NotBlank
 	private String userId;
 
 	// ユーザー名
+	@NotBlank
 	private String userName;
 
 	// 権限
 	private String permission;
 
 	// メールアドレス
+	@NotBlank
 	private String mailAddress;
 
 	public String getUserId() {
