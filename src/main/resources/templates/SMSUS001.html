@@ -10,9 +10,8 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@latest/dist/plugins/monthSelect/style.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
-	<link
-		href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone"
-		rel="stylesheet">
+	<link rel="stylesheet" href="../css/SMSUS001.css" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp|Material+Icons+Two+Tone" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="../js/index.js"></script>
 	<script src="../js/SMSUS001.js"></script>
@@ -23,18 +22,17 @@
 	<header>
 		<!-- ヘッダー部分は、Tymeleafで共通化すること-->
 		<nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: #f36304">
-			<a class="navbar-brand" href="ML010.html"> <span class="ml-1"
-					style="color: white; font-size: 1.0em; font-weight: bold;">労働時間計算システム
-				</span></a>
+			<a class="navbar-brand" href="ML010.html">
+				<span class="ml-1" style="color: white; font-size: 1.0em; font-weight: bold;">労働時間計算システム </span>
+			</a>
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav me-auto"></ul>
 
 				<ul class="navbar-nav">
-					<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-							role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white"> [Acount
-							Name] <span class="visually-hidden">(current)</span></a>
-						<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"
-							style="background-color: #f36304">
+					<li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white">
+							[Acount Name] <span class="visually-hidden">(current)</span>
+						</a>
+						<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="background-color: #f36304">
 							<a class="dropdown-item" href="LF020.html" style="color: white">パスワード変更</a>
 							<div class="dropdown-divider"></div>
 							<a class="dropdown-item" href="LF010.html" style="color: white">ログアウト</a>
@@ -45,33 +43,29 @@
 		</nav>
 	</header>
 
-	<div class="d-flex flex-row" style="height: 1000px">
+	<div class="d-flex flex-row">
 
 		<div th:replace="~{menu::menu}"></div>
 
 		<main class="w-100 bg-light">
 			<div class="container bg-white border py-3 my-3">
-				<div th:text="${message}" style="color: red;"></div>
+				<div th:text="${message}" class="message"></div>
 				<div class="card shadow bg-light">
 					<h3 class="font-weight-bold p-2">検索条件</h3>
 					<form method="post" action="/user/list">
-						<div class="card-body p-2" style="display: flex">
-							<div class="input-group mb-2 mx-2" style="width: 600px">
+						<div class="card-body p-2">
+							<div class="input-group mb-2 mx-2">
 								<span class="input-group-text">ユーザID</span>
-								<input type="text" name="userId" th:value="${userId}" aria-label="emNo"
-									class="form-control" style="width: 150px">
+								<input type="text" name="userId" th:value="${userId}" aria-label="emNo" class="form-control">
 								<span class="input-group-text">ユーザ名</span>
-								<input type="text" name="userName" th:value="${userName}" class="form-control"
-									style="width: 150px;">
+								<input type="text" name="userName" th:value="${userName}" class="form-control">
 							</div>
 						</div>
 
-						<div class="card-body p-2" style="display: flex">
-							<div class="input-group mb-2 mx-2" style="width: 300px">
+						<div class="card-body p-2">
+							<div class="input-group mb-2 mx-2">
 								<span class="input-group-text">権限</span>
-								<!-- <select name="permission" th:value="${permission}" id="permission-select"> -->
 								<select name="permission" id="permission-select">
-									<!--<select name="authStatus" id="permission-select">-->
 									<option value="all" th:selected="${permission == 'all'}">全て</option>
 									<option value="admin" th:selected="${permission == 'admin'}">管理者</option>
 									<option value="user" th:selected="${permission == 'user'}">一般</option>
@@ -79,47 +73,46 @@
 							</div>
 						</div>
 
-						<div class=" card-body p-2" style="display: flex">
+						<div class=" card-body p-2">
 							<div class="input-group mb-2 mx-2" style="width: 500px">
 								<span class="input-group-text">メールアドレス</span>
-								<input type="text" name="mailAddress" th:value="${mailAddress}" aria-label="emNo"
-									class="form-control" style="width: 150px">
+								<input type="text" name="mailAddress" th:value="${mailAddress}" aria-label="emNo" class="form-control">
 							</div>
 						</div>
 
-						<div class="card-body p-2" style="display: flex">
-							<button type="submit" class="btn btn-success border border-dark mb-2 mx-2"
-								style="color: white; background-color: cornflowerblue">検索</button>
+						<div class="card-body p-2">
+							<button type="submit" class="btn btn-success border border-dark mb-2 mx-2">検索</button>
 						</div>
 					</form>
 				</div>
 				<form method="post" action="/user/delete">
-					<div class="card-body p-2" style="display: flex">
-						<button type="button" onclick="location.href='/user/regist?seq_id=0'"
-							class="btn btn-success border border-dark mb-2 mx-2"
-							style="color: white; background-color: cornflowerblue;">新規登録</button>
-						<button type="button" id="delete" class="btn btn-success border border-dark mb-2 mx-2"
-							style="color: white; background-color: cornflowerblue;">選択行削除</button>
+					<div class="card-body p-2">
+						<button type="button" onclick="location.href='/user/regist?seq_id=0'" class="btn btn-success border border-dark mb-2 mx-2">新規登録</button>
+						<button type="button" id="delete" class="btn btn-success border border-dark mb-2 mx-2">選択行削除</button>
 					</div>
 
 					<div class="text-nowrap table-responsive">
-						<table class="table table-sm table-striped table-bordered my-3" style="width: 600px">
+						<table class="table table-sm table-striped table-bordered my-3">
 							<thead>
-								<tr bgcolor="royalblue" class="text-center" style="color: white">
-									<th scope="col" style="width: 20px"><input type="checkbox"></th>
-									<th scope="col" style="width: 45px">ユーザID</th>
-									<th scope="col" style="width: 120px">ユーザ名</th>
-									<th scope="col" style="width: 45px">権限</th>
-									<th scope="col" style="width: 200px">メールアドレス</th>
+								<tr bgcolor="royalblue" class="text-center">
+									<th scope="col" style="width: 20px">
+										<input type="checkbox">
+									</th>
+									<th scope="col" class="table-user-id">ユーザID</th>
+									<th scope="col" class="table-user-name">ユーザ名</th>
+									<th scope="col" class="table-user-auth">権限</th>
+									<th scope="col" class="table-user-mailaddress">メールアドレス</th>
 								</tr>
 							</thead>
 							<tbody>
 								<tr th:each="user:${allUserList}">
-									<th class="text-center"><input type="checkbox" name="deleteCheck[]"
-											th:value="${user.seq_id}"></th>
+									<th class="text-center">
+										<input type="checkbox" name="deleteCheck[]" th:value="${user.seq_id}">
+									</th>
 									<td th:text="${user.user_id}"></td>
-									<td><a th:text="${user.user_name}" href="/user/regist"
-											th:href="@{/user/regist(seq_id=${user.seq_id})}"></a></td>
+									<td>
+										<a th:text="${user.user_name}" href="/user/regist" th:href="@{/user/regist(seq_id=${user.seq_id})}"></a>
+									</td>
 									<td th:text="${user.auth_status}"></td>
 									<td th:text="${user.mail_address}"></td>
 								</tr>
@@ -127,9 +120,7 @@
 						</table>
 					</div>
 				</form>
-
-
-				<div class="ms-5">
+				<div class="ms-5" type="submit">
 					<a class="mx-3">← 前のページ</a>
 					<a class="mx-1">1</a>
 					<a class="mx-1">2</a>
@@ -138,6 +129,15 @@
 					<a class="mx-1">10</a>
 					<a class="mx-3">次のページ →</a>
 				</div>
+				<!--<div class="ms-5">
+					<a class="mx-3">← 前のページ</a>
+					<a class="mx-1">1</a>
+					<a class="mx-1">2</a>
+					<a class="mx-1">3</a>
+					<a class="mx-1">...</a>
+					<a class="mx-1">10</a>
+					<a class="mx-3">次のページ →</a>
+				</div>-->
 			</div>
 
 		</main>
@@ -145,8 +145,7 @@
 	<script src="../js/menu.js"></script>
 	<script src="../js/jquery-3.5.1.min.js"></script>
 	<script src="../js/bootstrap/bootstrap.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-		integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
 		crossorigin="anonymous"></script>
 </body>
 

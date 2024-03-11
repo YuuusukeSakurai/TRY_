@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+.d-flex.flex-row {
+	height: 1000px;
+}
+
+.card-body.p-2 {
+	display: flex;
+}
+
+.input-group.mb-2.mx-2 {
+	width: 600px;
+}
+
+.form-control {
+	width: 150px;
+}
+
+.btn.btn-success.border.border-dark.mb-2.mx-2 {
+	color: white;
+	background-color: cornflowerblue;
+}
+
+.table.table-sm.table-striped.table-bordered.my-3 {
+	width: 700px;
+}
+
+.text-center {
+	color: white;
+}
+
+.table-user-id {
+	width: 45px;
+}
+
+.table-user-name {
+	width: 120px;
+}
+.table-user-auth {
+	width: 45px;
+}
+.table-user-mailaddress{
+	width: 200px;
+}
+.message{
+	color: red;
+}
