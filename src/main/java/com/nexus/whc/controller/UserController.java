@@ -1,7 +1,9 @@
 package com.nexus.whc.controller;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -11,16 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.nexus.whc.Form.UserForm;
 import com.nexus.whc.services.CommonService;
 import com.nexus.whc.services.UserService;
 
@@ -60,11 +58,20 @@ public class UserController {
 		// ユーザマスタ一覧(SMSUS001.html)にユーザ情報を表示する上限
 		int pageSize = 20;
 		// ユーザ情報を取得(削除されていない)
-		List<Map<String, Object>> allUserList = userService.allUserInfo(pageSize, page -1);
+		List<Map<String, Object>> allUserList = userService.allUserInfoPageNation(page - 1, pageSize);
+
+		// 削除されていないユーザ数を集計
+		int totalUser = userService.allUserList().size();
+		// ページ数の算出
+		int totalPages = (int) Math.ceil((double) totalUser / pageSize);
+		int currentPage = page + 1;
 
 		// リクエストスコープに保存
 		model.addAttribute("allUserList", allUserList);
-
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPages", totalPages);
+		// 一覧モード
+		model.addAttribute("mode", "view");
 		// ユーザマスタ一覧に遷移
 		return "SMSUS001";
 	}
@@ -104,7 +111,6 @@ public class UserController {
 	// ユーザーマスタ登録画面（SMSUS002.html）表示
 	@GetMapping("/regist")
 	public String userRegist(
-			@ModelAttribute UserForm userForm,
 			@RequestParam(name = "seq_id") String seqId,
 			RedirectAttributes attr,
 			Model model) {
@@ -114,11 +120,16 @@ public class UserController {
 		model.addAttribute("seq_id", seqId);
 		// ユーザマスタ一覧(SMSUS001.html)から新規登録ボタン押下
 		if (seqId.equals("0")) {
+			/*マップの要素が全て空文字のマップを受け取る*/
+			Map<String, Object> userMap = userService.searchUser(seqId);
+
+			/*シーケンスIDとマップをスコープに保存*/
+			model.addAttribute("seq_id", seqId);
+			model.addAttribute("userMap", userMap);
 			// ユーザーマスタ登録画面（SMSUS002.html）表示
 			return "SMSUS002";
 		}
 
-		// ユーザマスタ一覧(SMSUS001.html)からユーザーリンクを押下（編集）
 		// 排他チェック（削除）
 		String[] seqID = new String[] { seqId };
 		List<Map<String, Object>> dataExists = userService.dataExistCheck(seqID);
@@ -146,134 +157,142 @@ public class UserController {
 			// ユーザマスタ一覧(SMSUS001)にリダイレクト
 			return "redirect:/user/list";
 		}
-		// ユーザーリンクからユーザ情報を取得する
-		List<Map<String, Object>> userSearchList = userService
-				.allUserSearch(dataExists.get(0).get("user_id").toString(), "", "", "");
-		System.out.println(userSearchList);
-		userForm.setUserId(userSearchList.get(0).get("user_id").toString());
-		// userFormに取得したユーザ情報を格納する
-		userForm.setUserName(userSearchList.get(0).get("user_name").toString());
-		// 権限をHTML用変換して格納する
-		if (userSearchList.get(0).get("auth_status").toString().equals("管理者")) {
-			userForm.setPermission("admin");
-		} else if (userSearchList.get(0).get("auth_status").toString().equals("一般")) {
-			userForm.setPermission("user");
-		}
-		userForm.setMailAddress(userSearchList.get(0).get("mail_address").toString());
 
+		// ユーザーリンクからユーザ情報を取得する
+		Map<String, Object> userMap = userService.searchUser(seqId);
+
+		/*引数で受け取ったシーケンスIDのユーザー情報をスコープに保存*/
+		model.addAttribute("seq_id", seqId);
+		model.addAttribute("userMap", userMap);
 		return "SMSUS002";
 	}
 
 	// ユーザーマスタ登録画面（SMSUS002）から登録処理
 	@PostMapping("/regist")
 	public String userRegist(
-			@Validated @ModelAttribute UserForm userForm,
-			BindingResult bindingResult,
+			@RequestParam(name = "seq_id") String seqId,
+			@RequestParam(name = "userId", defaultValue = "") String userId,
+			@RequestParam(name = "userName", defaultValue = "") String userName,
+			@RequestParam(name = "permission") String authStatus,
+			@RequestParam(name = "mailAddress", defaultValue = "") String mailAddress,
+			@RequestParam(name = "regist", defaultValue = "") String registButton,
 			@RequestParam(name = "nextRegist", defaultValue = "") String nextRegistButton,
 			@RequestParam(name = "update", defaultValue = "") String updateButton,
+			@RequestParam(name = "cancel", defaultValue = "") String cancelButton,
 			Model model,
 			RedirectAttributes attr) {
 
 		// エラーメッセージ
 		String error = "";
 
+		// キャンセル押下時
+		if (cancelButton.equals("cancel")) {
+			List<Map<String, Object>> list = new ArrayList<>();
+			Map<String, Object> map = new HashMap<>();
+			map.put("user_id", userId);
+			map.put("seq_id", seqId);
+			list.add(map);
+			commonService.deleteLockTable(list);
+			return "redirect:/user/list";
+		}
 		// 未入力項目がある場合
-		if (userForm.getUserId().isEmpty()) {
+		if (userId.isEmpty()) {
 			error += " ユーザID";
 		}
-		if (userForm.getUserName().isEmpty()) {
+		if (userName.isEmpty()) {
 			error += " ユーザ名";
 		}
-		if (userForm.getMailAddress().isEmpty()) {
+		if (mailAddress.isEmpty()) {
 			error += " メールアドレス";
 		}
-
+		// エラーメッセージの表示
 		if (!error.isEmpty()) {
-			attr.addFlashAttribute("userForm", userForm);
 			attr.addFlashAttribute("message", "COM01E001:" + error + "は必ず入力してください。");
-			if (updateButton.equals("update")) {
-				System.out.println("こんにち");
-				return "redirect:/user/regist?seq_id=30";
+			// 登録or登録して次へ押下してエラーメッセージの表示
+			if (registButton.equals("regist") || nextRegistButton.equals("nextRegist")) {
+				return "redirect:/user/regist?seq_id=0";
+			} else {
+				/* シーケンスIDが一致するユーザー情報を取得 */
+				Map<String, Object> userMap = userService.searchUser(seqId);
+
+				/*引数で受け取ったシーケンスIDのユーザー情報をスコープに保存*/
+				attr.addFlashAttribute("seq_id", seqId);
+				attr.addFlashAttribute("userMap", userMap);
+
+				return "redirect:/user/regist?seq_id=" + seqId;
 			}
-			return "redirect:/user/regist?seq_id=0";
 		}
 
 		// メールアドレスのフォーマットチェック
 		String mailFormat = "^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@nexus-nt.co.jp";
 		Pattern formatCheck = Pattern.compile(mailFormat);
 
-		if (!formatCheck.matcher(userForm.getMailAddress()).find()) {
+		if (!formatCheck.matcher(mailAddress).find()) {
 			error = messageSource.getMessage("COM01E003", new String[] { "メールアドレスとして正しいフォーマット", "～@nexus-nt.co.jp" },
 					Locale.getDefault());
-			attr.addFlashAttribute("userForm", userForm);
 			attr.addFlashAttribute("message", error);
-			return "redirect:/user/regist?seq_id=0";
+			if (registButton.equals("regist") || nextRegistButton.equals("nextRegist")) {
+				return "redirect:/user/regist?seq_id=0";
+			} else {
+				/* シーケンスIDが一致するユーザー情報を取得 */
+				Map<String, Object> userMap = userService.searchUser(seqId);
+
+				/*引数で受け取ったシーケンスIDのユーザー情報をスコープに保存*/
+				attr.addFlashAttribute("seq_id", seqId);
+				attr.addFlashAttribute("userMap", userMap);
+
+				return "redirect:/user/regist?seq_id=" + seqId;
+
+			}
 		}
+		System.out.println("登録ボタン：" + registButton);
+		// 新規登録ルート
+		if (registButton.equals("regist") || nextRegistButton.equals("nextRegist")) {
+			// すでに登録されている場合
+			List<Map<String, Object>> userCheckList = userService.allUserList();
+			for (Map<String, Object> userCheckMap : userCheckList) {
+				String registUserId = userCheckMap.get("user_id").toString();
+				String registMailAddress = userCheckMap.get("mail_address").toString();
 
-		// ユーザマスタからデータが登録されているか検索する。
-		Map<String, Object> userSearchMap = userService.userSearch(userForm.getUserId(), userForm.getUserName(),
-				userForm.getMailAddress());
+				// ユーザIDの重複チェック
+				if (userId.equals(registUserId)) {
+					error = messageSource.getMessage("COM01E011", new String[] { "ユーザIDに入力した", userId, "ユーザマスタ" },
+							Locale.getDefault());
+					attr.addFlashAttribute("message", error);
+					return "redirect:/user/regist?seq_id=0";
+				}
+				// メールアドレスの重複チェック
+				if (mailAddress.equals(registMailAddress)) {
+					error = messageSource.getMessage("COM01E011", new String[] { "ユーザIDに入力した", userId, "ユーザマスタ" },
+							Locale.getDefault());
+					attr.addFlashAttribute("message", error);
+					return "redirect:/user/regist?seq_id=0";
+				}
+			}
+			// ユーザマスタに登録されている最大のシークエンスIDを取得する
+			Map<String, Object> maxSeqId = userService.maxSeqId();
+			// 取得したシークエンスIDに＋1を足す
+			int settingSeqId = ((Integer) maxSeqId.get("seq_id")) + 1;
 
-		// すでに登録されている場合
-		if (!userSearchMap.isEmpty()) {
-			String confirmId = userSearchMap.get("user_id").toString();
-			String confirmName = userSearchMap.get("user_name").toString();
-			String confirmMail = userSearchMap.get("mail_address").toString();
+			// パスワードを生成
+			String passWord = passWord();
 
-			String item = "";
-			String duplicate = "";
-			if (confirmId.equals(userForm.getUserId())) {
-				item = " ユーザID";
-				duplicate = " " + userForm.getUserId();
-				System.out.println("");
+			// ユーザマスタに新規登録
+			int result = userService.userRegist(settingSeqId, userId, userName, authStatus, passWord, mailAddress);
+			System.out.println("登録件数:" + result);
+			// 登録して次へボタン押下時
+			if (nextRegistButton.equals("nextRegist")) {
+				return "redirect:/user/regist?seq_id=0";
 			}
-			if (confirmName.equals(userForm.getUserName())) {
-				item += " ユーザ名";
-				duplicate += " " + userForm.getUserName();
-			}
-			if (confirmMail.equals(userForm.getMailAddress())) {
-				item += " メールアドレス";
-				duplicate += " " + userForm.getMailAddress();
-			}
-			error = messageSource.getMessage("COM01E011",
-					new String[] { item, duplicate, "ユーザマスタ" },
-					Locale.getDefault());
-			attr.addFlashAttribute("userForm", userForm);
-			attr.addFlashAttribute("message", error);
-			return "redirect:/user/regist?seq_id=0";
+			return "redirect:/user/list";
 		}
-		// ユーザマスタに登録されている最大のシークエンスIDを取得する
-		Map<String, Object> maxSeqId = userService.maxSeqId();
-		// 取得したシークエンスIDに＋1を足す
-		int settingSeqId = ((Integer) maxSeqId.get("seq_id")) + 1;
-
-		// パスワードを生成
-		String passWord = passWord();
-
-		// ユーザマスタに新規登録
-		int result = userService.userRegist(settingSeqId, userForm.getUserId(), userForm.getUserName(),
-				userForm.getPermission(), passWord, userForm.getMailAddress());
-
-		// 登録して次へボタン押下時
-		if (nextRegistButton.equals("nextRegist")) {
-			return "redirect:/user/regist?seq_id=0";
+		if (updateButton.equals("update")) {
+			System.out.println("更新処理スタート");
+			int result = userService.updateUser(seqId, userId, userName, authStatus, mailAddress);
+			System.out.println("更新件数:" + result);
 		}
 		return "redirect:/user/list";
 	}
-
-	/*	ユーザーマスタ登録画面（SMSUS002）から更新処理
-		@PostMapping("/update")
-		public String userUpdate(@Validated @ModelAttribute UserForm userForm,
-				Model model,
-				RedirectAttributes attr) {
-			// エラーメッセージ
-			String error = "";
-	
-			// 未入力項目がある場合
-			System.out.println("未入力確認");
-	
-			return "redirect:/user/regist?seq_id=30";
-		}*/
 
 	/*ユーザマスタ一覧(SMSUS001)から選択行削除*/
 	@PostMapping("/delete")

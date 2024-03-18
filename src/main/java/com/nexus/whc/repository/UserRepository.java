@@ -17,8 +17,8 @@ public class UserRepository {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
-	// ユーザマスタの情報を取得する
-	public List<Map<String, Object>> allUserInfo(int pageSiza, int offset) {
+	// ユーザマスタの情報を取得する（ページネーション）
+	public List<Map<String, Object>> allUserInfoPageNation(int pageSiza, int offset) {
 
 		// SQL文の作成
 		String sql = "SELECT "
@@ -36,35 +36,35 @@ public class UserRepository {
 				+ "OFFSET ?";
 
 		// クエリを実行
-		List<Map<String, Object>> allUserList = jdbcTemplate.queryForList(sql, pageSiza, offset);
+		List<Map<String, Object>> allUserPageNationList = jdbcTemplate.queryForList(sql, pageSiza, offset);
+
+		// 取得したリストを返す
+		return allUserPageNationList;
+	}
+
+	// ユーザマスタの情報を取得する
+	public List<Map<String, Object>> allUserList() {
+
+		// SQL文の作成
+		String sql = "SELECT "
+				+ "m_user.seq_id, "
+				+ "m_user.user_id, "
+				+ "m_user.user_name, "
+				+ "m_user.auth_id, "
+				+ "m_user.mail_address, "
+				+ "m_authority.auth_status "
+				+ "FROM m_user "
+				+ "LEFT JOIN m_authority ON m_user.auth_id = m_authority.auth_id "
+				+ "WHERE delete_flg = 0 "
+				+ "ORDER BY user_id ASC";
+
+		// クエリを実行
+		List<Map<String, Object>> allUserList = jdbcTemplate.queryForList(sql);
 
 		// 取得したリストを返す
 		return allUserList;
 	}
 
-	/*	// ユーザマスタの情報を取得する
-		public List<Map<String, Object>> allUserInfo() {
-			
-			// SQL文の作成
-			String sql = "SELECT "
-					+ "m_user.seq_id, "
-					+ "m_user.user_id, "
-					+ "m_user.user_name, "
-					+ "m_user.auth_id, "
-					+ "m_user.mail_address, "
-					+ "m_authority.auth_status "
-					+ "FROM m_user "
-					+ "LEFT JOIN m_authority ON m_user.auth_id = m_authority.auth_id "
-					+ "WHERE delete_flg = 0 "
-					+ "ORDER BY user_id ASC";
-			
-			// クエリを実行
-			List<Map<String, Object>> allUserList = jdbcTemplate.queryForList(sql);
-			
-			// 取得したリストを返す
-			return allUserList;
-		}
-	*/
 	// ユーザマスタからデータが登録されているか検索する
 	public Map<String, Object> userSearch(String userId, String userName, String mailAddress) {
 
@@ -318,5 +318,58 @@ public class UserRepository {
 		// クエリの実行
 		Map<String, Object> maxSeqId = jdbcTemplate.queryForMap(sql);
 		return maxSeqId;
+	}
+
+	// ユーザー情報取得処理
+	public Map<String, Object> searchUser(String seqId) {
+
+		/*マップ型のインスタンスを生成*/
+		Map<String, Object> userMap = new HashMap<>();
+
+		/*新規登録の時はマップの各値に空文字を格納し返す*/
+		if (seqId.equals("0")) {
+			userMap.put("seq_id", "0");
+			userMap.put("user_id", "");
+			userMap.put("user_name", "");
+			userMap.put("auth_id", "");
+			userMap.put("mail_address", "");
+			return userMap;
+		}
+
+		/*SQL文の作成*/
+		String sql = "SELECT * FROM m_user WHERE delete_flg != 1 AND seq_id = ?";
+
+		/*?の箇所を置換するデータの配列を定義*/
+		Object[] param = { seqId };
+
+		/*クエリを実行*/
+		userMap = jdbcTemplate.queryForMap(sql, param);
+		/*取得したマップを返す*/
+		return userMap;
+	}
+
+	// 更新処理
+	public int updateUser(String seqId, String userId, String userName, String authStatus,
+			String mailAddress) {
+		// SQL文の作成
+		String sql = "UPDATE m_user "
+				+ "SET user_name = ?, auth_id = ?, mail_address = ? "
+				+ "WHERE seq_id = ? AND user_id = ?";
+
+		// 権限が選択されている場合
+		if (authStatus.equals("admin")) {
+			authStatus = "0";
+		} else if (authStatus.equals("user")) {
+			authStatus = "1";
+		}
+
+		// ？の箇所を置換するデータの配列を定義
+		Object[] param = { userName, authStatus, mailAddress, seqId, userId };
+
+		// クエリを実行
+		int result = jdbcTemplate.update(sql, param);
+
+		// 実行件数を返す
+		return result;
 	}
 }

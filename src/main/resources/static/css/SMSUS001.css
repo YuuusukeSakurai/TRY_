@@ -36,12 +36,31 @@
 .table-user-name {
 	width: 120px;
 }
+
 .table-user-auth {
 	width: 45px;
 }
-.table-user-mailaddress{
+
+.table-user-mailaddress {
 	width: 200px;
 }
-.message{
+
+.message {
 	color: red;
+}
+
+.pagenation {
+	display: flex;
+	list-style: none;
+
+}
+
+/*.ms-5 {
+	display: flex;
+	list-style: none;
+
+}*/
+
+.mx-1 {
+	margin: 0 5px;
 }

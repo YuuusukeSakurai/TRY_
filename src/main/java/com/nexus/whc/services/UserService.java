@@ -15,21 +15,23 @@ public class UserService {
 	UserRepository userRepository;
 
 	// ユーザマスタ情報を取得する(削除されていないユーザー)
-	public List<Map<String, Object>> allUserInfo(int pageSiza, int offset) {
+	public List<Map<String, Object>> allUserInfoPageNation(int pageNumber, int pageSize) {
 
-		List<Map<String, Object>> allUserList = userRepository.allUserInfo(pageSiza, offset);
+		/*オフセット数を定義*/
+		int offset = pageNumber * pageSize;
+		List<Map<String, Object>> allUserPageNationList = userRepository.allUserInfoPageNation(pageSize, offset);
+
+		return allUserPageNationList;
+	}
+
+	// ユーザマスタ情報を取得する(削除されていないユーザー)
+	public List<Map<String, Object>> allUserList() {
+
+		List<Map<String, Object>> allUserList = userRepository.allUserList();
 
 		return allUserList;
 	}
 
-	/*	// ユーザマスタ情報を取得する(削除されていないユーザー)
-		public List<Map<String, Object>> allUserInfo() {
-			
-			List<Map<String, Object>> allUserList = userRepository.allUserInfo();
-			
-			return allUserList;
-		}
-	*/
 	// ユーザマスタからデータが登録されているか検索する
 	public Map<String, Object> userSearch(String userId, String userName, String mailAddress) {
 
@@ -105,5 +107,18 @@ public class UserService {
 	public Map<String, Object> maxSeqId() {
 		Map<String, Object> maxSeqId = userRepository.maxSeqId();
 		return maxSeqId;
+	}
+
+	// ユーザ情報取得処理
+	public synchronized Map<String, Object> searchUser(String seqId) {
+		Map<String, Object> userMap = userRepository.searchUser(seqId);
+		return userMap;
+	}
+
+	// ユーザ情報更新処理
+	public int updateUser(String seqId, String userId, String userName, String authStatus,
+			String mailAddress) {
+		int result = userRepository.updateUser(seqId, userId, userName, authStatus, mailAddress);
+		return result;
 	}
 }
