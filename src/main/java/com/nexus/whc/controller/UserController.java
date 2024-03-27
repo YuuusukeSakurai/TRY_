@@ -49,14 +49,15 @@ public class UserController {
 	// ユーザマスタテーブル名
 	String userMaster = "m_user";
 
+	// ユーザマスタ一覧(SMSUS001.html)にユーザ情報を表示する上限
+	int pageSize = 20;
+
 	// ユーザマスタ一覧(SMSUS001.html)表示
 	@GetMapping("/list")
 	public String userList(
 			@RequestParam(defaultValue = "1") int page,
 			Model model) {
 
-		// ユーザマスタ一覧(SMSUS001.html)にユーザ情報を表示する上限
-		int pageSize = 20;
 		// ユーザ情報を取得(削除されていない)
 		List<Map<String, Object>> allUserList = userService.allUserInfoPageNation(page - 1, pageSize);
 
@@ -77,7 +78,8 @@ public class UserController {
 	}
 
 	// ユーザ検索(SMSUS001)
-	@PostMapping("/list")
+	/*@PostMapping("/list")*/
+	@PostMapping("/search")
 	public String allUserSearch(
 			@RequestParam(name = "userId", defaultValue = "") String userId,
 			@RequestParam(name = "userName", defaultValue = "") String userName,
