@@ -1,7 +1,7 @@
-USE 'whc_db';
 
-INSERT INTO m_authority (auth_id, auth_status) VALUES (1, "一般");
-INSERT INTO m_authority (auth_id, auth_status) VALUES (0, "管理者");
+
+INSERT INTO m_authority (`auth_id`, `auth_status`) VALUES (1, '一般');
+INSERT INTO m_authority (`auth_id`, `auth_status`) VALUES (0, '管理者');
 
 
 INSERT INTO m_user (seq_id, user_id, user_name, password, auth_id, mail_address, delete_flg, created_at, created_user, updated_at, updated_user) VALUES (1, 'nexus001', 'ネクサス太郎1', '123456', 1, 'user001@nexus.com', 0, '2023-07-05T16:47:09.480', 'Nnexus001', '2023-07-05T16:47:09.480', 'nexus001');

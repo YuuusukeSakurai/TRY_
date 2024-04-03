@@ -1,0 +1,2 @@
+seq_id,user_id,user_name,password,auth_id,mail_address,delete_flg,created_at,created_user,updated_at,updated_user
+100,200,'テストユーザ',password,0,'test01@nexus-nt.co.jp',0,2024-01-01 12:00:00,nexus01,2024-01-02 12:00:00,nexus101
